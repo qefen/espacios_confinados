@@ -3,6 +3,9 @@ package com.example.kmartinez.espacios_confinados;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,9 +32,23 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -98,20 +116,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String password = mPasswordView.getText().toString();
         boolean cancel = false;
         View focusView = null;
+
+        //valiadar contraseña
         if (TextUtils.isEmpty(password)){
             mPasswordView.setError("Se requiere Contraseña");
             focusView = mPasswordView;
             cancel = true;
         }
-
+        //Validar usuario
         if(TextUtils.isEmpty(email)){
             mEmailView.setError("Este campo es Obligatorio");
             focusView = mEmailView;
             cancel = true;
         }
+
         if (cancel){
             focusView.requestFocus();
         }else {
+            //Mensaje de espera + inicio de tarea para login
             Progreso progreso = new Progreso();
             progreso.show(getSupportFragmentManager(),"Ejemplo");
         }
@@ -316,6 +338,113 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    class DoActivity extends AsyncTask<String, String, String> {
+
+        private Context context;
+
+
+        public DoActivity(Context context) {
+            this.context = context;
+            Toast toast = Toast.makeText(context,"La informacion se esta validando, espere un momento.",Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+/*
+    protected void onPreExecute() {
+        Toast toast = Toast.makeText(this.context,"Se esta procesando la información.",Toast.LENGTH_LONG);
+        toast.show();
+    }
+*/
+
+        protected void onPostExecute(String result) {
+            Toast toast;
+            SharedPreferences sharedPref = this.context.getSharedPreferences("charlas", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("flag", "0");
+            String  flag = sharedPref.getString("flag", "");
+            editor.apply();
+
+            if(result.compareTo("true")==0){
+
+               // Intent intent = new Intent(context, Charla.class);
+                //context.startActivity(intent);
+            }
+            else{
+
+
+                toast = Toast.makeText(this.context, result, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            String data;
+            String returndata = "Favor de revisar la conexión de su dispositivo.";
+
+            String user = args[0];
+            String pass = args[1];
+
+            try {
+                // Creating & connection Connection with url and required Header.
+                data = "user="+user;
+                data += "&password="+pass;
+                data += "&function=get_auth";
+                data += "&version=082018v1_VIOSHE";
+
+                URL url = new URL("https://sissmac.arcelormittal.com.mx/logistics/violacionesSHE/violacionSHE.jsp?"+data);
+                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
+                urlConnection.setRequestMethod("POST");   //POST or GET
+//                    urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                urlConnection.connect();
+
+                // Write Request to output stream to server.
+                OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
+
+                out.close();
+                // Check the connection status.
+                int statusCode = urlConnection.getResponseCode();
+                String statusMsg = urlConnection.getResponseMessage();
+
+                // Connection success. Proceed to fetch the response.
+                if (statusCode == 200) {
+                    InputStream it = new BufferedInputStream(urlConnection.getInputStream());
+                    InputStreamReader read = new InputStreamReader(it);
+                    BufferedReader buff = new BufferedReader(read);
+                    StringBuilder dta = new StringBuilder();
+                    String chunks;
+                    while ((chunks = buff.readLine()) != null) {
+                        dta.append(chunks);
+                    }
+                    returndata = dta.toString();
+                    Log.d("Check", returndata);
+                }
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                Log.d("Check1", returndata);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("Check2", returndata);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("Check3", returndata);
+            } catch (Exception e) {
+
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+            }
+
+            return returndata.trim();
+        }
+
+
     }
 }
 

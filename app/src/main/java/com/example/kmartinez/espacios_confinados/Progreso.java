@@ -14,8 +14,8 @@ public class Progreso extends AppCompatDialogFragment {
         View customView = LayoutInflater.from(getContext()).inflate(R.layout.progresdialog,null);
         builder.setView(customView);
 
-        builder.setTitle("Iniciar sesión")
-                .setMessage("La informacion se esta validando, espere un momento");
+        builder.setTitle("Iniciando sesión")
+                .setMessage("La informacion se esta validando, por favor espere un momento");
              /*   .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
