@@ -83,7 +83,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+               //attemptLogin();
+                intentoLogin();
             }
         });
 
@@ -92,7 +93,30 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
+    private void intentoLogin(){
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+        boolean cancel = false;
+        View focusView = null;
+        if (TextUtils.isEmpty(password)){
+            mPasswordView.setError("Se requiere Contraseña");
+            focusView = mPasswordView;
+            cancel = true;
+        }
 
+        if(TextUtils.isEmpty(email)){
+            mEmailView.setError("Este campo es Obligatorio");
+            focusView = mEmailView;
+            cancel = true;
+        }
+        if (cancel){
+            focusView.requestFocus();
+        }else {
+            Progreso progreso = new Progreso();
+            progreso.show(getSupportFragmentManager(),"Ejemplo");
+        }
+
+    }
 
 
 
@@ -119,7 +143,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError("Se requiere Contraseña");
             focusView = mPasswordView;
             cancel = true;

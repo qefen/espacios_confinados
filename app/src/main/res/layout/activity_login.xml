@@ -48,7 +48,7 @@
                     android:id="@+id/nempleado"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:background="@drawable/redondeo"
+
                     android:hint="Numero de Empleado"
                     android:inputType="number"
                     android:maxLines="1"
@@ -64,7 +64,7 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:background="@drawable/redondeo"
+
                     android:hint="Contraseña"
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_in_short"
