@@ -136,6 +136,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Mensaje de espera + inicio de tarea para login
             Progreso progreso = new Progreso();
             progreso.show(getSupportFragmentManager(),"Ejemplo");
+            Intent intent = new Intent(getApplicationContext(), Lector.class);
+            startActivity(intent);
         }
 
     }
