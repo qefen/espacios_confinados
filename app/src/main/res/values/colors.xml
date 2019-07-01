@@ -4,4 +4,11 @@
     <color name="colorPrimaryDark">#e82c0c</color>
     <color name="colorAccent">#FF0000</color>
     <color name="colorblack">#000000</color>
+    <color name="Background">#ecf0f1</color>
+    <color name="ColorHint">#bdc3c7</color>
+    <color name="ColorTint">#f25900</color>
+    <color name="ColorText">#212121</color>
+    <color name="ColorTextBlank">#ecf0f1</color>
+    <color name="Prueba">#8e44ad</color>
+    <color name="FondoTransparente">#267f8c8d</color>
 </resources>

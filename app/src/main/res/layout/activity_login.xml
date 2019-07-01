@@ -10,7 +10,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:background="@color/Background">
 
     <!-- Login progress -->
     <ProgressBar
@@ -31,24 +32,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            >
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp">
 
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="110dp"
                 app:srcCompat="@drawable/mittal" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
 
                 <AutoCompleteTextView
                     android:id="@+id/nempleado"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-
+                    android:backgroundTint="@color/colorPrimary"
+                    android:textColorHint="@color/ColorHint"
+                    android:textColor="@color/ColorText"
+                    android:textSize="18dp"
                     android:hint="Numero de Empleado"
                     android:inputType="number"
                     android:maxLines="1"
@@ -64,7 +70,10 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-
+                    android:backgroundTint="@color/colorPrimary"
+                    android:textColorHint="@color/ColorHint"
+                    android:textColor="@color/ColorText"
+                    android:textSize="18dp"
                     android:hint="Contraseña"
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_in_short"
@@ -80,9 +89,11 @@
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:textSize="22dp"
+                android:textColor="@color/ColorTextBlank"
+                android:layout_marginTop="22dp"
                 android:background="@drawable/redondeo_button"
-                android:text="Entrar"
+                android:text="Ingresar"
                 android:textStyle="bold" />
 
         </LinearLayout>
