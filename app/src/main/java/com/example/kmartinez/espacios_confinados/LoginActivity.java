@@ -86,18 +86,24 @@ public class LoginActivity extends AppCompatActivity{
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                intentoLogin();
+                intentoLogin(mEmailView.getText().toString(), mPasswordView.getText().toString());
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+//Comprueba credenciales:
+        if(getEmpleado() != "undefined" && getPassword() != "undefined"){
+            Log.d("autoAuth","Login using sharedPreferences:");
+            Log.d("Current emp", getEmpleado());
+            Log.d("Current password", getPassword());
+            final DoActivity Tarea = new DoActivity(LoginActivity.this);
+            Tarea.execute(getEmpleado(), getPassword());
+        }
+
     }
 
-
-    private void intentoLogin(){
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+    private void intentoLogin(String email, String password){
         boolean cancel = false;
         View focusView = null;
 
@@ -125,6 +131,45 @@ public class LoginActivity extends AppCompatActivity{
 
         }
 
+    }
+/**
+*   Guarda en el sharedPreferences los datos de acceso del usuario(número de empleado y su contraseña)
+ */
+    protected void saveCredentials(String empleado, String password) {
+
+        Context context = LoginActivity.this;
+        SharedPreferences credentialsPreferences = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        SharedPreferences.Editor credentialsEditor = credentialsPreferences.edit();
+        credentialsEditor.putString("nEmpleado", empleado);
+        credentialsEditor.putString("nPassword", password);
+        credentialsEditor.commit();
+
+        String newnNempleado = credentialsPreferences.getString("nEmpleado","undefined");
+        String newPassword = credentialsPreferences.getString("nPassword","undefined");
+
+        Log.d("new empleado added",newnNempleado);
+        Log.d("new password added",newPassword);
+    }
+
+    /**
+    *   Obtiene el número de empleado del sharedPreferences
+    */
+    protected String getEmpleado(){
+
+        Context context = LoginActivity.this;
+        SharedPreferences credentialsPreferences = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        String empleado = credentialsPreferences.getString("nEmpleado","undefined");
+        return  empleado;
+    }
+    /**
+    *   Obtiene la contraseña del empleado del sharedPreferences
+    */
+    protected String getPassword(){
+
+        Context context = LoginActivity.this;
+        SharedPreferences credentialsPreferences = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        String password = credentialsPreferences.getString("nPassword","undefined");
+        return  password;
     }
 
 
@@ -157,6 +202,10 @@ public class LoginActivity extends AppCompatActivity{
 
 
             if(result.compareTo("true")==0){
+                if(getEmpleado() == "undefined" || getPassword() == "undefined") {
+                    saveCredentials(mEmailView.getText().toString(), mPasswordView.getText().toString());
+                }
+
                 Intent intent = new Intent(getApplicationContext(), Lector.class);
                 startActivity(intent);
             }
