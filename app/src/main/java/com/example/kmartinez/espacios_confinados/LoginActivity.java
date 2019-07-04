@@ -206,7 +206,7 @@ public class LoginActivity extends AppCompatActivity{
                     saveCredentials(mEmailView.getText().toString(), mPasswordView.getText().toString());
                 }
 
-                Intent intent = new Intent(getApplicationContext(), Lector.class);
+                Intent intent = new Intent(getApplicationContext(), MenuApp.class);
                 startActivity(intent);
             }
             else{
