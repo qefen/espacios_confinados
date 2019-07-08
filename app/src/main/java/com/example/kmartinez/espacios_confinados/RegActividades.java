@@ -26,14 +26,12 @@ public class RegActividades extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_reg_actividades, container, false);;
+        View view = inflater.inflate(R.layout.fragment_reg_actividades, container, false);
         nactividad = (EditText) view.findViewById(R.id.edtNactividad);
         narea = (EditText) view.findViewById(R.id.edtNarea);
         lugare = (EditText) view.findViewById(R.id.edtLugare);
         tiempo = (EditText) view.findViewById(R.id.edtTiempo);
         insertar = (Button) view.findViewById(R.id.btnIngresar);
-
-        //Button mEmailSignInButton = (Button) view.findViewById(R.id.email_sign_in_button);
         insertar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
