@@ -94,18 +94,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
                     <AutoCompleteTextView
                         android:id="@+id/edtTiempo"
-                        android:layout_width="match_parent"
+                        android:layout_width="216dp"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/colorPrimary"
-                        android:textColorHint="@color/ColorHint"
-                        android:textColor="@color/ColorText"
-                        android:textSize="18dp"
                         android:hint="Tiempo maximo dentro del area"
                         android:inputType="number"
                         android:maxLines="1"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textColor="@color/ColorText"
+                        android:textColorHint="@color/ColorHint"
+                        android:textSize="18dp" />
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"></View>
+
+                    <Spinner
+                        android:id="@+id/Spn1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
 
                 </android.support.design.widget.TextInputLayout>
 

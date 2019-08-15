@@ -7,13 +7,16 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 
 public class RegActividades extends Fragment {
     EditText nactividad, narea, lugare, tiempo;
     Button insertar;
+    Spinner sp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,8 +42,14 @@ public class RegActividades extends Fragment {
             }
         });
 
+        sp = (Spinner) view.findViewById(R.id.Spn1);
+        String [] opciones = {"Hrs","Min"};
+        ArrayAdapter <String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
+        sp.setAdapter(adapter);
         return view;
     }
+
+
 
     private void intentoLogin(String actividad, String area, String lugar, String tiempo2){
         boolean cancel = false;
