@@ -46,6 +46,8 @@ public class RegActividades extends Fragment {
         String [] opciones = {"Hrs","Min"};
         ArrayAdapter <String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
         sp.setAdapter(adapter);
+
+        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(getContext(),"bd_actividad",null,1);
         return view;
     }
 
