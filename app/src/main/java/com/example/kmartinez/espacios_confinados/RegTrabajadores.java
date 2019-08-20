@@ -78,7 +78,7 @@ public class RegTrabajadores extends Fragment {
     }
 
     public void escaner(){
-        IntentIntegrator intent = new IntentIntegrator(getActivity());
+        IntentIntegrator intent = IntentIntegrator.forSupportFragment(RegTrabajadores.this);
         intent.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
         intent.setPrompt("COLOQUE EL CODIGO QR EN EL CENTRO DE EL ESCANER");
         intent.setCameraId(0);
