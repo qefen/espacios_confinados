@@ -1,6 +1,7 @@
 package com.example.kmartinez.espacios_confinados;
 
-import android.content.Intent;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -11,12 +12,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.example.kmartinez.espacios_confinados.utilidades.Utilidades;
 
 
 public class RegActividades extends Fragment {
     EditText nactividad, narea, lugare, tiempo;
     Button insertar;
     Spinner sp;
+    String id_Act, resul_seg;
+    int tiempo_int;
+    boolean op = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,20 +41,31 @@ public class RegActividades extends Fragment {
         narea = (EditText) view.findViewById(R.id.edtNarea);
         lugare = (EditText) view.findViewById(R.id.edtLugare);
         tiempo = (EditText) view.findViewById(R.id.edtTiempo);
-        insertar = (Button) view.findViewById(R.id.btnIngresar);
+        insertar = (Button) view.findViewById(R.id.btnInsertar);
+
+        //Accion de el boton registrar
         insertar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Avisa que hay campos vacios
                 intentoLogin(nactividad.getText().toString(), narea.getText().toString(), lugare.getText().toString(), tiempo.getText().toString());
+
+                //se inicia cuando no hay ningun campo vacio
+                if (op == false){
+                    id_Act = "1";
+                    registrarActividad();
+                    //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
         sp = (Spinner) view.findViewById(R.id.Spn1);
         String [] opciones = {"Hrs","Min"};
         ArrayAdapter <String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
         sp.setAdapter(adapter);
 
-        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(getContext(),"bd_actividad",null,1);
+
         return view;
     }
 
@@ -62,28 +80,33 @@ public class RegActividades extends Fragment {
             nactividad.setError("Este campo es obligatorio");
             focusView = nactividad;
             cancel = true;
+            op = true;
         }
         //Validar usuario
         if(TextUtils.isEmpty(area)){
             narea.setError("Este campo es obligatorio");
             focusView = narea;
             cancel = true;
+            op = true;
         }
         if (TextUtils.isEmpty(lugar)){
             lugare.setError("Este campo es obligatorio");
             focusView = lugare;
             cancel = true;
+            op = true;
         }
         //Validar usuario
         if(TextUtils.isEmpty(tiempo2)){
             tiempo.setError("Este campo es obligatorio");
             focusView = tiempo;
             cancel = true;
+            op = true;
         }
 
         if (cancel){
             focusView.requestFocus();
         }else {
+            op = false;
             //Mensaje de espera + inicio de tarea para login
 
 
@@ -92,5 +115,41 @@ public class RegActividades extends Fragment {
 
         }
 
+    }
+
+    private void calcularTmax(View view){
+        String seleccion = sp.getSelectedItem().toString();
+        tiempo_int = (int) Integer.parseInt(String.valueOf(tiempo));
+        int conv;
+
+        if (seleccion.equals("Hrs")){
+            conv = (tiempo_int * 3600);
+            resul_seg = String.valueOf(conv);
+            Toast.makeText(getActivity(), "Tiempo en seg"+conv+"seg", Toast.LENGTH_SHORT).show();
+        }else {
+            if (seleccion.equals("Min")){
+                conv = (tiempo_int * 60);
+                resul_seg = String.valueOf(conv);
+                Toast.makeText(getActivity(), "Tiempo en seg"+conv+"seg", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    private void registrarActividad(){
+        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(getContext(),"bd_actividad",null,1);
+        SQLiteDatabase db = conn.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Utilidades.CAMPO_ID,id_Act);
+        values.put(Utilidades.CAMPO_NOMBRE_ACT,nactividad.getText().toString());
+        values.put(Utilidades.CAMPO_AREA_ACT,narea.getText().toString());
+        values.put(Utilidades.CAMPO_LUGAR_ESP,lugare.getText().toString());
+        values.put(Utilidades.CAMPO_TIEMPO_MAX,resul_seg);
+
+        Long idResultante=db.insert(Utilidades.TABLA_ACTIVIDADES, Utilidades.CAMPO_ID,values);
+
+        Toast.makeText(getContext(), "ID Registro: "+idResultante, Toast.LENGTH_SHORT).show();
+        db.close();
     }
 }

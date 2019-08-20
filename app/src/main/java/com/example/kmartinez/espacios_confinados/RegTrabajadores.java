@@ -3,6 +3,7 @@ package com.example.kmartinez.espacios_confinados;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ public class RegTrabajadores extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (getArguments() != null) {
 
         }
@@ -33,7 +35,9 @@ public class RegTrabajadores extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         View view = inflater.inflate(R.layout.fragment_reg_trabajadores, container, false);
+
         numseg = (EditText) view.findViewById(R.id.edtNss);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         scanner = (Button) view.findViewById(R.id.btnScanner);
@@ -75,8 +79,8 @@ public class RegTrabajadores extends Fragment {
 
     public void escaner(){
         IntentIntegrator intent = new IntentIntegrator(getActivity());
-        intent.setDesiredBarcodeFormats(IntentIntegrator.PRODUCT_CODE_TYPES);
-        intent.setPrompt("ESCANEAR CODIGO");
+        intent.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        intent.setPrompt("COLOQUE EL CODIGO QR EN EL CENTRO DE EL ESCANER");
         intent.setCameraId(0);
         intent.setBeepEnabled(false);
         intent.setBarcodeImageEnabled(false);
@@ -84,19 +88,18 @@ public class RegTrabajadores extends Fragment {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        Toast.makeText(getActivity(), "ESCANER INICIADO", Toast.LENGTH_SHORT).show();
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
 
-                Toast.makeText(getActivity(), "La lectura de informacion ha sido cancelada.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "La lectura de informacion ha sido cancelada.", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(getActivity(),result.getContents().toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),result.getContents().toString(),Toast.LENGTH_LONG).show();
             }
         } else {
-
-            // super.onActivityResult(requestCode, resultCode, data);
+            super.onActivityResult(requestCode, resultCode, data);
         }
 
     }

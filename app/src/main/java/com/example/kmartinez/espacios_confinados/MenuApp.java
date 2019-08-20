@@ -1,5 +1,6 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,7 @@ public class MenuApp extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_menu_app);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
