@@ -1,9 +1,11 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.kmartinez.espacios_confinados.utilidades.Utilidades;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -22,6 +25,7 @@ import com.google.zxing.integration.android.IntentResult;
 public class RegTrabajadores extends Fragment {
     EditText numseg;
     Button insertar, scanner;
+    String numeroSeguro;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,10 +45,19 @@ public class RegTrabajadores extends Fragment {
         numseg = (EditText) view.findViewById(R.id.edtNss);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         scanner = (Button) view.findViewById(R.id.btnScanner);
+        if (numseg.getText().toString().isEmpty()){
+            insertar.setEnabled(false);
+        }else{
+            insertar.setEnabled(true);
+        }
+
+
+
         insertar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 intentoLogin(numseg.getText().toString());
+                numeroSeguro = numseg.getText().toString();
             }
         });
         scanner.setOnClickListener(new View.OnClickListener() {
@@ -96,11 +109,32 @@ public class RegTrabajadores extends Fragment {
                 Toast.makeText(getContext(), "La lectura de informacion ha sido cancelada.", Toast.LENGTH_SHORT).show();
 
             } else {
+                //convertimos el texto extraido del qr en cadena de texto se separa cada que encuentra una ,
+                String[] num=result.getContents().toString().split(",");
+                //quitamos espacios
+                //numeroSeguro = num[0].trim();
                 Toast.makeText(getContext(),result.getContents().toString(),Toast.LENGTH_LONG).show();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+
+    private void registrarTrabajador(){
+        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(getContext(),"bd_trabajador",null,1);
+        SQLiteDatabase db = conn.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        ///values.put(Utilidades.CAMPO_NOMBRE_ACT,nactividad.getText().toString());
+        //values.put(Utilidades.CAMPO_AREA_ACT,narea.getText().toString());
+        //values.put(Utilidades.CAMPO_LUGAR_ESP,lugare.getText().toString());
+        //values.put(Utilidades.CAMPO_TIEMPO_MAX,resul_seg);
+       // values.put(Utilidades.CAMPO_ESTADO_ACT,"habilitada");
+
+        Long idResultante=db.insert(Utilidades.TABLA_ACTIVIDADES, Utilidades.CAMPO_ID,values);
+
+        Toast.makeText(getContext(), "ID Registro: "+idResultante, Toast.LENGTH_SHORT).show();
+        db.close();
     }
 }

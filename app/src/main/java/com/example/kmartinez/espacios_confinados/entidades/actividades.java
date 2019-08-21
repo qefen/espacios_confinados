@@ -6,13 +6,15 @@ public class actividades {
     private String areaAct;
     private String lugarEsp;
     private Integer tiempoMax;
+    private String estadoAct;
 
-    public actividades(Integer id_actividad, String nombreAct, String areaAct, String lugarEsp, Integer tiempoMax) {
+    public actividades(Integer id_actividad, String nombreAct, String areaAct, String lugarEsp, Integer tiempoMax, String estadoAct) {
         this.id_actividad = id_actividad;
         this.nombreAct = nombreAct;
         this.areaAct = areaAct;
         this.lugarEsp = lugarEsp;
         this.tiempoMax = tiempoMax;
+        this.estadoAct = estadoAct;
     }
 
     public Integer getId_actividad() {
@@ -53,5 +55,13 @@ public class actividades {
 
     public void setTiempoMax(Integer tiempoMax) {
         this.tiempoMax = tiempoMax;
+    }
+
+    public String getEstadoAct() {
+        return estadoAct;
+    }
+
+    public void setEstadoAct(String estadoAct) {
+        this.estadoAct = estadoAct;
     }
 }

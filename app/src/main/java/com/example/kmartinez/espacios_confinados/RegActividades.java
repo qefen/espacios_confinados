@@ -2,6 +2,7 @@ package com.example.kmartinez.espacios_confinados;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -21,7 +22,7 @@ public class RegActividades extends Fragment {
     EditText nactividad, narea, lugare, tiempo;
     Button insertar;
     Spinner sp;
-    String id_Act, resul_seg;
+    String  resul_seg,estadoact;
     int tiempo_int;
     boolean op = false;
 
@@ -42,7 +43,7 @@ public class RegActividades extends Fragment {
         lugare = (EditText) view.findViewById(R.id.edtLugare);
         tiempo = (EditText) view.findViewById(R.id.edtTiempo);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
-
+        estadoact = "true";
         //Accion de el boton registrar
         insertar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +53,7 @@ public class RegActividades extends Fragment {
 
                 //se inicia cuando no hay ningun campo vacio
                 if (op == false){
-                    id_Act = "1";
+                    calcularTmax();
                     registrarActividad();
                     //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
                 }
@@ -117,9 +118,9 @@ public class RegActividades extends Fragment {
 
     }
 
-    private void calcularTmax(View view){
+    private void calcularTmax(){
         String seleccion = sp.getSelectedItem().toString();
-        tiempo_int = (int) Integer.parseInt(String.valueOf(tiempo));
+        tiempo_int = (int) Integer.parseInt(tiempo.getText().toString());
         int conv;
 
         if (seleccion.equals("Hrs")){
@@ -141,11 +142,11 @@ public class RegActividades extends Fragment {
         SQLiteDatabase db = conn.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Utilidades.CAMPO_ID,id_Act);
         values.put(Utilidades.CAMPO_NOMBRE_ACT,nactividad.getText().toString());
         values.put(Utilidades.CAMPO_AREA_ACT,narea.getText().toString());
         values.put(Utilidades.CAMPO_LUGAR_ESP,lugare.getText().toString());
         values.put(Utilidades.CAMPO_TIEMPO_MAX,resul_seg);
+        values.put(Utilidades.CAMPO_ESTADO_ACT,estadoact.toString());
 
         Long idResultante=db.insert(Utilidades.TABLA_ACTIVIDADES, Utilidades.CAMPO_ID,values);
 
