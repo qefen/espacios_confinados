@@ -1,6 +1,8 @@
 package com.example.kmartinez.espacios_confinados;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,7 +24,8 @@ public class RegActividades extends Fragment {
     EditText nactividad, narea, lugare, tiempo;
     Button insertar;
     Spinner sp;
-    String  resul_seg,estadoact;
+    String  resul_seg;
+    int cnt, cont;
     int tiempo_int;
     boolean op = false;
 
@@ -43,7 +46,24 @@ public class RegActividades extends Fragment {
         lugare = (EditText) view.findViewById(R.id.edtLugare);
         tiempo = (EditText) view.findViewById(R.id.edtTiempo);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
-        estadoact = "true";
+        sp = (Spinner) view.findViewById(R.id.Spn1);
+        String [] opciones = {"Hrs","Min"};
+        ArrayAdapter <String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
+        sp.setAdapter(adapter);
+
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(),"actividades",null,1 );
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT * FROM actividad ;",null);
+        cont = cursor.getCount();
+        Toast.makeText(getContext(),"primer toast "+cnt,Toast.LENGTH_LONG).show();
+        cursor.close();
+        if (cont > 0){
+            checar();
+        }else{
+            Toast.makeText(getContext(),"Ingresa Los Datos "+cnt,Toast.LENGTH_LONG).show();
+        }
+
+
         //Accion de el boton registrar
         insertar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,15 +76,14 @@ public class RegActividades extends Fragment {
                     calcularTmax();
                     registrarActividad();
                     //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(getActivity(), "TODOS LOS CAMPOS DEBEN ESTAR LLENOS", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
 
-        sp = (Spinner) view.findViewById(R.id.Spn1);
-        String [] opciones = {"Hrs","Min"};
-        ArrayAdapter <String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
-        sp.setAdapter(adapter);
+
 
 
         return view;
@@ -137,20 +156,73 @@ public class RegActividades extends Fragment {
 
     }
 
+    private void checar(){
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(),"actividades",null,1 );
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';",null);
+        cursor.moveToFirst();
+        cnt = cursor.getInt(0);
+        Toast.makeText(getContext(),"Comprobando "+cnt,Toast.LENGTH_LONG).show();
+        cursor.close();
+
+        if (cnt >= 1){
+            Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE id_actividad = '"+cnt+"';",null);
+            if(c.moveToFirst()){
+                nactividad.setText(c.getString(0));
+                narea.setText((c.getString(1)));
+                lugare.setText(c.getString(2));
+                tiempo.setText((c.getString(3)));
+                c.close();
+            } else{
+                Toast.makeText(getContext(),"Quita este pinche error "+cnt,Toast.LENGTH_LONG).show();
+                c.close();
+            }
+
+
+            nactividad.setEnabled(false);
+            narea.setEnabled(false);
+            lugare.setEnabled(false);
+            tiempo.setEnabled(false);
+            insertar.setEnabled(false);
+            sp.setEnabled(false);
+        }else{
+            if (cnt == 0){
+                nactividad.setEnabled(true);
+                narea.setEnabled(true);
+                lugare.setEnabled(true);
+                tiempo.setEnabled(true);
+                insertar.setEnabled(true);
+                sp.setEnabled(true);
+            }
+        }
+    }
+
     private void registrarActividad(){
-        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(getContext(),"bd_actividad",null,1);
-        SQLiteDatabase db = conn.getWritableDatabase();
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(),"actividades",null, 1);
+        SQLiteDatabase baseD = conn.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(Utilidades.CAMPO_NOMBRE_ACT,nactividad.getText().toString());
-        values.put(Utilidades.CAMPO_AREA_ACT,narea.getText().toString());
-        values.put(Utilidades.CAMPO_LUGAR_ESP,lugare.getText().toString());
-        values.put(Utilidades.CAMPO_TIEMPO_MAX,resul_seg);
-        values.put(Utilidades.CAMPO_ESTADO_ACT,estadoact.toString());
+        String nombAct = nactividad.getText().toString();
+        String nombArea = narea.getText().toString();
+        String lugarEsp = lugare.getText().toString();
+        String tiempoAct = tiempo.getText().toString();
+        String estadoAct = "true";
+        //Toast.makeText(getContext(),nombAct,Toast.LENGTH_LONG).show();
+        ContentValues registro = new ContentValues();
+        registro.put("nombre",nombAct);
+        registro.put("area",nombArea);
+        registro.put("luEsp",lugarEsp);
+        registro.put("tiempoMax",tiempoAct);
+        registro.put("estado",estadoAct);
 
-        Long idResultante=db.insert(Utilidades.TABLA_ACTIVIDADES, Utilidades.CAMPO_ID,values);
+        baseD.insert("actividad",null, registro);
+        baseD.close();
 
-        Toast.makeText(getContext(), "ID Registro: "+idResultante, Toast.LENGTH_SHORT).show();
-        db.close();
+        nactividad.setEnabled(false);
+        narea.setEnabled(false);
+        lugare.setEnabled(false);
+        tiempo.setEnabled(false);
+        sp.setEnabled(false);
+        Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
+
     }
 }

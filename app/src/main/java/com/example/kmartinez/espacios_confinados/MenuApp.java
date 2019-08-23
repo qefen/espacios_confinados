@@ -85,13 +85,13 @@ public class MenuApp extends AppCompatActivity
         int id = item.getItemId();
         FragmentManager fragmentManager=getSupportFragmentManager();
 
-        if (id == R.id.nav_home) {
+        if (id == R.id.nav_RegAct) {
             // Handle the camera action
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegActividades()).commit();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_RegTrab) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegTrabajadores()).commit();
-        } else if (id == R.id.nav_slideshow) {
-
+        } else if (id == R.id.nav_List) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new prueba()).commit();
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
