@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,11 +24,15 @@ import com.example.kmartinez.espacios_confinados.utilidades.Utilidades;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.Calendar;
+import java.util.Date;
+
 
 public class RegTrabajadores extends Fragment {
     EditText numseg, nombemp;
     Button insertar, scanner;
-    String numeroSeguro,nombree;
+    String numeroSeguro,nombree,time;
+    int cntid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,8 @@ public class RegTrabajadores extends Fragment {
         numseg = (EditText) view.findViewById(R.id.edtNss);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         scanner = (Button) view.findViewById(R.id.btnScanner);
-
+        hora();
+        Toast.makeText(getActivity(), "This is The hour: "+time, Toast.LENGTH_SHORT).show();
 
         //comprueba si hay red
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -57,12 +63,12 @@ public class RegTrabajadores extends Fragment {
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento
             nombemp.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "Si jalo paps", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Si hay internet", Toast.LENGTH_SHORT).show();
         } else {
             // No hay conexión a Internet en este momento
             nombemp.setVisibility(View.VISIBLE);
             nombree = nombemp.getText().toString();
-            Toast.makeText(getActivity(), "No jalo paps", Toast.LENGTH_SHORT).show();
+           Toast.makeText(getActivity(), "No hay internet", Toast.LENGTH_SHORT).show();
         }
 
         //al hacer clic
@@ -105,6 +111,15 @@ public class RegTrabajadores extends Fragment {
         }
     }
 
+    public void hora(){
+        Calendar calendario = Calendar.getInstance();
+        long ahora = System.currentTimeMillis();
+        calendario.setTimeInMillis(ahora);
+        int hora = calendario.get(Calendar.HOUR_OF_DAY);
+        int minuto = calendario.get(Calendar.MINUTE);
+        time = hora+":"+minuto;
+    }
+
     public void escaner(){
         IntentIntegrator intent = IntentIntegrator.forSupportFragment(RegTrabajadores.this);
         intent.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
@@ -137,20 +152,29 @@ public class RegTrabajadores extends Fragment {
 
     }
 
-
+    private void consultaid(){
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(),"actividades",null, 1);
+        SQLiteDatabase baseD = conn.getWritableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';",null);
+        cursor.moveToFirst();
+        cntid = cursor.getInt(0);
+        cursor.close();
+    }
 
     private void registrarTrabajador(){
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(),"trabajador",null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
-
-        String id_actividad = "1";
+        consultaid();
+        String id_actividad = String.valueOf(cntid);
         String numeroSeguro = numseg.getText().toString();
         String nombre = nombree;
+        String hora = time.toString();
         String estado = "ENTRO";
         ContentValues registro = new ContentValues();
         registro.put("id_actividad",id_actividad);
         registro.put("numSegS",numeroSeguro);
         registro.put("nombre",nombre);
+        registro.put("hora",hora);
         registro.put("estado",estado);
 
         baseD.insert("trabajador",null, registro);
