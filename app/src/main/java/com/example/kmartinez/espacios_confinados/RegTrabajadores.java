@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.kmartinez.espacios_confinados.utilidades.Utilidades;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -31,7 +30,7 @@ import java.util.Date;
 public class RegTrabajadores extends Fragment {
     EditText numseg, nombemp;
     Button insertar, scanner;
-    String numeroSeguro,nombree,time;
+    String numeroSeguro, nombree, time;
     int cntid;
 
     @Override
@@ -54,7 +53,7 @@ public class RegTrabajadores extends Fragment {
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         scanner = (Button) view.findViewById(R.id.btnScanner);
         hora();
-        Toast.makeText(getActivity(), "This is The hour: "+time, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "This is The hour: " + time, Toast.LENGTH_SHORT).show();
 
         //comprueba si hay red
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -68,7 +67,7 @@ public class RegTrabajadores extends Fragment {
             // No hay conexión a Internet en este momento
             nombemp.setVisibility(View.VISIBLE);
             nombree = nombemp.getText().toString();
-           Toast.makeText(getActivity(), "No hay internet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "No hay internet", Toast.LENGTH_SHORT).show();
         }
 
         //al hacer clic
@@ -83,26 +82,26 @@ public class RegTrabajadores extends Fragment {
         scanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            escaner();
-            registrarTrabajador();
+                escaner();
+                registrarTrabajador();
             }
         });
 
         return view;
     }
 
-    private void intentoLogin(String nseg){
+    private void intentoLogin(String nseg) {
         boolean cancel = false;
         View focusView = null;
         //Validar usuario
-        if(TextUtils.isEmpty(nseg)){
+        if (TextUtils.isEmpty(nseg)) {
             numseg.setError("Este campo es obligatorio");
             focusView = numseg;
             cancel = true;
         }
-        if (cancel){
+        if (cancel) {
             focusView.requestFocus();
-        }else {
+        } else {
             //Mensaje de espera + inicio de tarea para login
 
 
@@ -111,16 +110,16 @@ public class RegTrabajadores extends Fragment {
         }
     }
 
-    public void hora(){
+    public void hora() {
         Calendar calendario = Calendar.getInstance();
         long ahora = System.currentTimeMillis();
         calendario.setTimeInMillis(ahora);
         int hora = calendario.get(Calendar.HOUR_OF_DAY);
         int minuto = calendario.get(Calendar.MINUTE);
-        time = hora+":"+minuto;
+        time = hora + ":" + minuto;
     }
 
-    public void escaner(){
+    public void escaner() {
         IntentIntegrator intent = IntentIntegrator.forSupportFragment(RegTrabajadores.this);
         intent.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
         intent.setPrompt("COLOQUE EL CODIGO QR EN EL CENTRO DE EL ESCANER");
@@ -140,11 +139,11 @@ public class RegTrabajadores extends Fragment {
 
             } else {
                 //convertimos el texto extraido del qr en cadena de texto se separa cada que encuentra una ,
-                String[] num=result.getContents().toString().split(",");
+                String[] num = result.getContents().toString().split(",");
                 //quitamos espacios
                 numeroSeguro = num[0].trim();
                 nombree = num[2];
-                Toast.makeText(getContext(),numeroSeguro+"--"+nombree,Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -152,17 +151,17 @@ public class RegTrabajadores extends Fragment {
 
     }
 
-    private void consultaid(){
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(),"actividades",null, 1);
+    private void consultaid() {
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
-        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';",null);
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
         cntid = cursor.getInt(0);
         cursor.close();
     }
 
-    private void registrarTrabajador(){
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(),"trabajador",null, 1);
+    private void registrarTrabajador() {
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
         consultaid();
         String id_actividad = String.valueOf(cntid);
@@ -171,15 +170,17 @@ public class RegTrabajadores extends Fragment {
         String hora = time.toString();
         String estado = "ENTRO";
         ContentValues registro = new ContentValues();
-        registro.put("id_actividad",id_actividad);
-        registro.put("numSegS",numeroSeguro);
-        registro.put("nombre",nombre);
-        registro.put("hora",hora);
-        registro.put("estado",estado);
+        registro.put("id_actividad", id_actividad);
+        registro.put("numSegS", numeroSeguro);
+        registro.put("nombre", nombre);
+        registro.put("hora", hora);
+        registro.put("estado", estado);
 
-        baseD.insert("trabajador",null, registro);
+        baseD.insert("trabajador", null, registro);
         baseD.close();
 
         Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
+        nombemp.setText("");
+        numseg.setText("");
     }
 }

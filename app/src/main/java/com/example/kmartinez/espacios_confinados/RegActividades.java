@@ -17,14 +17,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.kmartinez.espacios_confinados.utilidades.Utilidades;
-
 
 public class RegActividades extends Fragment {
     EditText nactividad, narea, lugare, tiempo;
     Button insertar;
     Spinner sp;
-    String  resul_seg;
+    String resul_seg;
     int cnt, cont;
     int tiempo_int;
     boolean op = false;
@@ -47,20 +45,20 @@ public class RegActividades extends Fragment {
         tiempo = (EditText) view.findViewById(R.id.edtTiempo);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         sp = (Spinner) view.findViewById(R.id.Spn1);
-        String [] opciones = {"Hrs","Min"};
-        ArrayAdapter <String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
+        String[] opciones = {"Hrs", "Min"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
         sp.setAdapter(adapter);
 
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(),"actividades",null,1 );
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
-        Cursor cursor = baseD.rawQuery("SELECT * FROM actividad ;",null);
+        Cursor cursor = baseD.rawQuery("SELECT * FROM actividad ;", null);
         cont = cursor.getCount();
-        Toast.makeText(getContext(),"primer toast "+cnt,Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "primer toast " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
-        if (cont > 0){
+        if (cont > 0) {
             checar();
-        }else{
-            Toast.makeText(getContext(),"Ingresa Los Datos "+cnt,Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(), "Ingresa Los Datos " + cnt, Toast.LENGTH_LONG).show();
         }
 
 
@@ -72,60 +70,56 @@ public class RegActividades extends Fragment {
                 intentoLogin(nactividad.getText().toString(), narea.getText().toString(), lugare.getText().toString(), tiempo.getText().toString());
 
                 //se inicia cuando no hay ningun campo vacio
-                if (op == false){
+                if (op == false) {
                     calcularTmax();
                     registrarActividad();
                     //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     Toast.makeText(getActivity(), "TODOS LOS CAMPOS DEBEN ESTAR LLENOS", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
 
-
-
-
         return view;
     }
 
 
-
-    private void intentoLogin(String actividad, String area, String lugar, String tiempo2){
+    private void intentoLogin(String actividad, String area, String lugar, String tiempo2) {
         boolean cancel = false;
         View focusView = null;
 
         //valiadar contraseña
-        if (TextUtils.isEmpty(actividad)){
+        if (TextUtils.isEmpty(actividad)) {
             nactividad.setError("Este campo es obligatorio");
             focusView = nactividad;
             cancel = true;
             op = true;
         }
         //Validar usuario
-        if(TextUtils.isEmpty(area)){
+        if (TextUtils.isEmpty(area)) {
             narea.setError("Este campo es obligatorio");
             focusView = narea;
             cancel = true;
             op = true;
         }
-        if (TextUtils.isEmpty(lugar)){
+        if (TextUtils.isEmpty(lugar)) {
             lugare.setError("Este campo es obligatorio");
             focusView = lugare;
             cancel = true;
             op = true;
         }
         //Validar usuario
-        if(TextUtils.isEmpty(tiempo2)){
+        if (TextUtils.isEmpty(tiempo2)) {
             tiempo.setError("Este campo es obligatorio");
             focusView = tiempo;
             cancel = true;
             op = true;
         }
 
-        if (cancel){
+        if (cancel) {
             focusView.requestFocus();
-        }else {
+        } else {
             op = false;
             //Mensaje de espera + inicio de tarea para login
 
@@ -137,44 +131,44 @@ public class RegActividades extends Fragment {
 
     }
 
-    private void calcularTmax(){
+    private void calcularTmax() {
         String seleccion = sp.getSelectedItem().toString();
         tiempo_int = (int) Integer.parseInt(tiempo.getText().toString());
         int conv;
 
-        if (seleccion.equals("Hrs")){
-            conv = (tiempo_int * 3600);
+        if (seleccion.equals("Hrs")) {
+            conv = (tiempo_int * 60);
             resul_seg = String.valueOf(conv);
-            Toast.makeText(getActivity(), "Tiempo en seg"+conv+"seg", Toast.LENGTH_SHORT).show();
-        }else {
-            if (seleccion.equals("Min")){
-                conv = (tiempo_int * 60);
+            Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
+        } else {
+            if (seleccion.equals("Min")) {
+                conv = (tiempo_int * 1);
                 resul_seg = String.valueOf(conv);
-                Toast.makeText(getActivity(), "Tiempo en seg"+conv+"seg", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
             }
         }
 
     }
 
-    private void checar(){
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(),"actividades",null,1 );
+    private void checar() {
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
-        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';",null);
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
         cnt = cursor.getInt(0);
-        Toast.makeText(getContext(),"Comprobando "+cnt,Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Comprobando " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
 
-        if (cnt >= 1){
-            Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE id_actividad = '"+cnt+"';",null);
-            if(c.moveToFirst()){
+        if (cnt >= 1) {
+            Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE id_actividad = '" + cnt + "';", null);
+            if (c.moveToFirst()) {
                 nactividad.setText(c.getString(0));
                 narea.setText((c.getString(1)));
                 lugare.setText(c.getString(2));
                 tiempo.setText((c.getString(3)));
                 c.close();
-            } else{
-                Toast.makeText(getContext(),"Quita este pinche error "+cnt,Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), "Quita este pinche error " + cnt, Toast.LENGTH_LONG).show();
                 c.close();
             }
 
@@ -185,8 +179,8 @@ public class RegActividades extends Fragment {
             tiempo.setEnabled(false);
             insertar.setEnabled(false);
             sp.setEnabled(false);
-        }else{
-            if (cnt == 0){
+        } else {
+            if (cnt == 0) {
                 nactividad.setEnabled(true);
                 narea.setEnabled(true);
                 lugare.setEnabled(true);
@@ -197,8 +191,8 @@ public class RegActividades extends Fragment {
         }
     }
 
-    private void registrarActividad(){
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(),"actividades",null, 1);
+    private void registrarActividad() {
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
 
         String nombAct = nactividad.getText().toString();
@@ -208,13 +202,13 @@ public class RegActividades extends Fragment {
         String estadoAct = "true";
         //Toast.makeText(getContext(),nombAct,Toast.LENGTH_LONG).show();
         ContentValues registro = new ContentValues();
-        registro.put("nombre",nombAct);
-        registro.put("area",nombArea);
-        registro.put("luEsp",lugarEsp);
-        registro.put("tiempoMax",tiempoAct);
-        registro.put("estado",estadoAct);
+        registro.put("nombre", nombAct);
+        registro.put("area", nombArea);
+        registro.put("luEsp", lugarEsp);
+        registro.put("tiempoMax", tiempoAct);
+        registro.put("estado", estadoAct);
 
-        baseD.insert("actividad",null, registro);
+        baseD.insert("actividad", null, registro);
         baseD.close();
 
         nactividad.setEnabled(false);

@@ -1,5 +1,6 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -91,7 +92,9 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_RegTrab) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegTrabajadores()).commit();
         } else if (id == R.id.nav_List) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new prueba()).commit();
+            Intent intent = new Intent(getApplicationContext(), ListaTrabajadores.class);
+            startActivity(intent);
+            //fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {

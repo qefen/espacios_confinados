@@ -13,14 +13,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.kmartinez.espacios_confinados.utilidades.Utilidades;
-
 
 public class prueba extends Fragment {
-TextView tv1, tv2, tv3, tv4;
-Button consult;
-ConexionSQLiteHelper conn;
-
+    TextView tv1, tv2, tv3, tv4;
+    Button consult;
+    ConexionSQLiteHelper conn;
 
 
     @Override
@@ -35,7 +32,7 @@ ConexionSQLiteHelper conn;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_prueba, container, false);
 
-        conn = new ConexionSQLiteHelper(getContext(),"bd_actividad",null,1);
+        conn = new ConexionSQLiteHelper(getContext(), "bd_actividad", null, 1);
 
         tv1 = (TextView) view.findViewById(R.id.tv1);
         tv2 = (TextView) view.findViewById(R.id.tv2);
@@ -54,18 +51,16 @@ ConexionSQLiteHelper conn;
 
         return view;
     }
-    private void consultar(){
 
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(),"actividades",null,1 );
+    private void consultar() {
+
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
-        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';",null);
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
         int cnt = cursor.getInt(0);
-        Toast.makeText(getContext(),"texto: "+cnt,Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "texto: " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
-
-
-
 
 
         //Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';",new String[],{cate);
@@ -90,7 +85,7 @@ ConexionSQLiteHelper conn;
         }*/
     }
 
-    private void limpiar(){
+    private void limpiar() {
         tv1.setText("");
         tv2.setText("");
         tv3.setText("");
