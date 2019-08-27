@@ -18,7 +18,7 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
     private Context mContext;
     private List<trabajoConfinado> trabajoConfinadoList = new ArrayList<>();
 
-    public trabajoConfinadoAdapter(@NonNull Context context, ArrayList<trabajoConfinado> list){
+    public trabajoConfinadoAdapter(@NonNull Context context, @LayoutRes ArrayList<trabajoConfinado> list){
         super(context, 0, list);
         mContext = context;
         trabajoConfinadoList = list;

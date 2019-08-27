@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,21 +37,17 @@ public class ListaTrabajadores extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Toast.makeText(getActivity(), "ds", Toast.LENGTH_SHORT).show();
         // Inflate the layout for this fragment
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         View view = inflater.inflate(R.layout.activity_lista_trabajadores, container, false);
-        listView = view.findViewById(R.id.ListaT);
-
+        listView = (ListView) view.findViewById(R.id.ListaT);
         ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
         listatrabajosConfinados.add(new trabajoConfinado("kitzia yanez","455445342552","23:56","23:56"));
         listatrabajosConfinados.add(new trabajoConfinado("Marvin Tinoco","4564534536456","65:36","65:36"));
         listatrabajosConfinados.add(new trabajoConfinado("Eleazar Saavedra","45634534533","4:57","4:57"));
         listatrabajosConfinados.add(new trabajoConfinado("Juliana Molina","45634534533","5:36","5:36"));
         listatrabajosConfinados.add(new trabajoConfinado("Alejandro Mamarre","45645645346","10:16","10:16"));
-
-        tCAdapter = new trabajoConfinadoAdapter(this.getContext(), listatrabajosConfinados);
-
+        tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
+        listView.setAdapter(tCAdapter);
         return view;
     }
 }
