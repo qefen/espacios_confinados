@@ -37,12 +37,13 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
         TextView nombre2 = (TextView) listItem.findViewById(R.id.tvNameE);
         TextView numero2 = (TextView) listItem.findViewById(R.id.tvNss);
         TextView hre2 = (TextView) listItem.findViewById(R.id.tvhr);
-        TextView hora2 = (TextView) listItem.findViewById(R.id.tvTimer);
+        TimerTextView hora2 = (TimerTextView) listItem.findViewById(R.id.tvTimer);
 
         nombre2.setText(currentTrabajoConfinado.getRnombre());
         numero2.setText(currentTrabajoConfinado.getRnumeross());
         hre2.setText(currentTrabajoConfinado.getRhrEnt());
-        hora2.setText(currentTrabajoConfinado.getRhora());
+        //hora2.setText(String.valueOf(currentTrabajoConfinado.getRhora()));
+        hora2.setEndTime(System.currentTimeMillis() + currentTrabajoConfinado.getRhora());
 
         return listItem;
     }

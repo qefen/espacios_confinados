@@ -41,11 +41,11 @@ public class ListaTrabajadores extends Fragment {
         View view = inflater.inflate(R.layout.activity_lista_trabajadores, container, false);
         listView = (ListView) view.findViewById(R.id.ListaT);
         ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
-        listatrabajosConfinados.add(new trabajoConfinado("kitzia yanez","455445342552","23:56","23:56"));
-        listatrabajosConfinados.add(new trabajoConfinado("Marvin Tinoco","4564534536456","65:36","65:36"));
-        listatrabajosConfinados.add(new trabajoConfinado("Eleazar Saavedra","45634534533","4:57","4:57"));
-        listatrabajosConfinados.add(new trabajoConfinado("Juliana Molina","45634534533","5:36","5:36"));
-        listatrabajosConfinados.add(new trabajoConfinado("Alejandro Mamarre","45645645346","10:16","10:16"));
+        listatrabajosConfinados.add(new trabajoConfinado("kitzia yanez","455445342552","23:56",3 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Marvin Tinoco","4564534536456","65:36",3 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Eleazar Saavedra","45634534533","4:57",2 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Juliana Molina","45634534533","5:36",2 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Alejandro Mamarre","45645645346","10:16",1 * 30 * 1000));
         tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
         listView.setAdapter(tCAdapter);
         return view;

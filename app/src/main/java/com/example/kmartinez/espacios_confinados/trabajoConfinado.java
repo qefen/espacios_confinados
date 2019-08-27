@@ -6,12 +6,17 @@ package com.example.kmartinez.espacios_confinados;
  * TODO: Analizar qué otros posibles datos se piensan guardar
  */
 public class trabajoConfinado {
+    // Nombre de la actividad en el espacio confinado
     private String rnombre;
+    // Seguro social del trabajador
     private String rnumeross;
+    // La hora en la que entró el trabajador al espacio confinado
     private String rhrEnt;
-    private String rhora;
+    // Tiempo maximo (milisegundos) que tiene permitido el trabajador dentro del espacio confinado
+    private long rhora;
 
-    public trabajoConfinado(String rnombre, String rnumeross, String rhrEnt, String rhora) {
+
+    public trabajoConfinado(String rnombre, String rnumeross, String rhrEnt, long rhora) {
         this.rnombre = rnombre;
         this.rnumeross = rnumeross;
         this.rhrEnt = rhrEnt;
@@ -42,11 +47,11 @@ public class trabajoConfinado {
         this.rhrEnt = rhrEnt;
     }
 
-    public String getRhora() {
+    public long getRhora() {
         return rhora;
     }
 
-    public void setRhora(String rhora) {
+    public void setRhora(long rhora) {
         this.rhora = rhora;
     }
 
