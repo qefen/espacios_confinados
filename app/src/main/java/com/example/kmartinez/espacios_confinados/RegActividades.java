@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,27 +141,28 @@ public class RegActividades extends Fragment {
             conv = (tiempo_int * 3600);
             resul_seg = String.valueOf(conv);
             Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
-        } else {
-            if (seleccion.equals("Min")) {
+        }
+        if (seleccion.equals("Min")) {
                 conv = (tiempo_int * 60);
                 resul_seg = String.valueOf(conv);
                 Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
             }
-        }
+
         registrarActividad();
     }
 
     private void checar() {
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
-        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
+        Cursor cursor = baseD.rawQuery("SELECT * FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
-        cnt = cursor.getInt(0);
-        Toast.makeText(getContext(), "Comprobando " + cnt, Toast.LENGTH_LONG).show();
+        cnt = cursor.getCount();
+        Log.d("Checar","Comprobando " + cnt);
+        //Toast.makeText(getContext(), "Comprobando " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
 
         if (cnt >= 1) {
-            Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE id_actividad = '" + cnt + "';", null);
+            Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE estado = 'true';", null);
             if (c.moveToFirst()) {
                 nactividad.setText(c.getString(0));
                 narea.setText((c.getString(1)));
@@ -198,7 +200,7 @@ public class RegActividades extends Fragment {
         String nombAct = nactividad.getText().toString();
         String nombArea = narea.getText().toString();
         String lugarEsp = lugare.getText().toString();
-        String tiempoAct = tiempo.getText().toString();
+        String tiempoAct = resul_seg.toString();
         String estadoAct = "true";
         //Toast.makeText(getContext(),nombAct,Toast.LENGTH_LONG).show();
         ContentValues registro = new ContentValues();

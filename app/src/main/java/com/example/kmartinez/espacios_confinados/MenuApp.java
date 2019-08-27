@@ -146,6 +146,8 @@ public class MenuApp extends AppCompatActivity
 
         if (cantidad == 1){
             Toast.makeText(this, "Los Articulos se modificacos", Toast.LENGTH_LONG).show();
+
+
         }else{
             Toast.makeText(this, "Los Articulos no se modificaron", Toast.LENGTH_LONG).show();
         }
