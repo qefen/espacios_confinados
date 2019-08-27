@@ -144,6 +144,7 @@ public class RegTrabajadores extends Fragment {
                 numeroSeguro = num[0].trim();
                 nombree = num[2];
                 Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
+                // TODO: Validar que solo sean el tipo de credenciales que se manejan, y no otro tipo de código
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

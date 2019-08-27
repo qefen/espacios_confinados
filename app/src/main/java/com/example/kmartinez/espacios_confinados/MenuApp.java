@@ -92,9 +92,10 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_RegTrab) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegTrabajadores()).commit();
         } else if (id == R.id.nav_List) {
-            Intent intent = new Intent(getApplicationContext(), ListaTrabajadores.class);
-            startActivity(intent);
-            //fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
+
+            //Intent intent = new Intent(getApplicationContext(), ListaTrabajadores.class);
+            //startActivity(intent);
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
         } else if (id == R.id.nav_tools) {
 
         } else if (id == R.id.nav_share) {
