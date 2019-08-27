@@ -2,6 +2,8 @@ package com.example.kmartinez.espacios_confinados;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 public class ListaTrabajadores extends Fragment {
     private ListView listView;
     private trabajoConfinadoAdapter tCAdapter;
+    int cnt;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,14 +43,43 @@ public class ListaTrabajadores extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_lista_trabajadores, container, false);
         listView = (ListView) view.findViewById(R.id.ListaT);
-        ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
-        listatrabajosConfinados.add(new trabajoConfinado("kitzia yanez","455445342552","23:56",3 * 60 * 1000));
-        listatrabajosConfinados.add(new trabajoConfinado("Marvin Tinoco","4564534536456","65:36",3 * 60 * 1000));
-        listatrabajosConfinados.add(new trabajoConfinado("Eleazar Saavedra","45634534533","4:57",2 * 60 * 1000));
-        listatrabajosConfinados.add(new trabajoConfinado("Juliana Molina","45634534533","5:36",2 * 60 * 1000));
-        listatrabajosConfinados.add(new trabajoConfinado("Alejandro Mamarre","45645645346","10:16",1 * 30 * 1000));
+
+        //consulta para ver cuantos registros hay
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT count(*) FROM trabajador;", null);
+        cursor.moveToFirst();
+        cnt = cursor.getInt(0);
+        Toast.makeText(getContext(), "texto: " + cnt, Toast.LENGTH_LONG).show();
+        cursor.close();
+        //ciclo del tamaño de los registros
+        for (int i = 0; i <= cnt; i++) {
+            //consulta que obtiene ciertos parametros de la bd
+            Cursor c = baseD.rawQuery("SELECT numSegS, nombre, hora FROM trabajador WHERE id_trabajador = '" + i + "';", null);
+            cursor.moveToFirst();
+            //puede fallar
+            //en la base de datos esta como integer, puede ser causa del error
+            String numeroseguro = cursor.getString(0);//aqui marca el error
+
+            String Nombre = cursor.getString(1);
+            String hora = cursor.getString(2);
+            ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
+            listatrabajosConfinados.add(new trabajoConfinado(Nombre, numeroseguro, hora, 3 * 60 * 1000));
+            tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
+            listView.setAdapter(tCAdapter);
+
+            c.close();
+        }
+        return view;
+        /*ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
+        listatrabajosConfinados.add(new trabajoConfinado("kitzia yanez", "455445342552", "23:56", 3 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Marvin Tinoco", "4564534536456", "65:36", 3 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Eleazar Saavedra", "45634534533", "4:57", 2 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Juliana Molina", "45634534533", "5:36", 2 * 60 * 1000));
+        listatrabajosConfinados.add(new trabajoConfinado("Alejandro Mamarre", "45645645346", "10:16", 1 * 30 * 1000));
         tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
         listView.setAdapter(tCAdapter);
-        return view;
-    }
+        return view;*/
+
+}
 }
