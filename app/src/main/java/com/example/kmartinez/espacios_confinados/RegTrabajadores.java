@@ -55,7 +55,7 @@ public class RegTrabajadores extends Fragment {
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         scanner = (Button) view.findViewById(R.id.btnScanner);
         hora();
-        Toast.makeText(getActivity(), "This is The hour: " + time, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "This is The hour: " + time, Toast.LENGTH_SHORT).show();
 
         //comprueba si hay red
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -80,7 +80,7 @@ public class RegTrabajadores extends Fragment {
                 intentoLogin(numseg.getText().toString());
                 numeroSeguro = numseg.getText().toString();
                 nombree = nombemp.getText().toString();
-                Toast.makeText(getActivity(), "Este es el nombre"+nombree, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Este es el nombre" + nombree, Toast.LENGTH_SHORT).show();
                 registrarTrabajador();
             }
         });
@@ -88,7 +88,6 @@ public class RegTrabajadores extends Fragment {
             @Override
             public void onClick(View view) {
                 escaner();
-                registrarTrabajador();
             }
         });
 
@@ -144,15 +143,21 @@ public class RegTrabajadores extends Fragment {
                 //convertimos el texto extraido del qr en cadena de texto se separa cada que encuentra una ,
                 String[] num = result.getContents().toString().split(",");
                 //quitamos espacios
-                numeroSeguro = num[0].trim();
-                nombree = num[2];
-                Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
+
+                receptor(num[0].trim(), num[2]);
+                //
                 // TODO: Validar que solo sean el tipo de credenciales que se manejan, y no otro tipo de código
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+    public void receptor(String ns, String nom) {
+        numeroSeguro = ns;
+        nombree = nom;
+        Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
+        registrarTrabajador();
     }
 
     private void consultaid() {
@@ -167,15 +172,17 @@ public class RegTrabajadores extends Fragment {
     private void registrarTrabajador() {
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
+        Toast.makeText(getContext(), "En el Registro: "+numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
         consultaid();
+
         String id_actividad = String.valueOf(cntid);
-        String numeroSeguro = numseg.getText().toString();
+        String numeroSeguro1 = numeroSeguro.toString();
         String nombre = nombree.toString();
         String hora = time.toString();
         String estado = "ENTRO";
         ContentValues registro = new ContentValues();
         registro.put("id_actividad", id_actividad);
-        registro.put("numSegS", numeroSeguro);
+        registro.put("numSegS", numeroSeguro1);
         registro.put("nombre", nombre);
         registro.put("hora", hora);
         registro.put("estado", estado);
