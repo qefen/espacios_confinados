@@ -76,7 +76,7 @@ public class TimerTextView extends AppCompatTextView {
                 }
                 getHandler().post(new Runnable() {
                     @Override public void run() {
-                        setText(getDurationBreakdown(endTime - System.currentTimeMillis()));
+                            setText(getDurationBreakdown(endTime - System.currentTimeMillis()));
                     }
                 });
             }
