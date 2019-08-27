@@ -29,6 +29,8 @@ public class ListaTrabajadores extends Fragment {
     private ListView listView;
     private trabajoConfinadoAdapter tCAdapter;
     int cnt;
+    ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,27 +54,32 @@ public class ListaTrabajadores extends Fragment {
         cnt = cursor.getInt(0);
         Toast.makeText(getContext(), "texto: " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
+
         //ciclo del tamaño de los registros
-        for (int i = 0; i <= cnt; i++) {
+        for (int i = 1; i <= cnt; i++) {
             //consulta que obtiene ciertos parametros de la bd
             Cursor c = baseD.rawQuery("SELECT numSegS, nombre, hora FROM trabajador WHERE id_trabajador = '" + i + "';", null);
-            cursor.moveToFirst();
+            c.moveToFirst();
             //puede fallar
             //en la base de datos esta como integer, puede ser causa del error
-            Toast.makeText(getContext(), "-No Paso-", Toast.LENGTH_LONG).show();
-            String numeroseguro = cursor.getString(0);//aqui marca el error
-            Toast.makeText(getContext(), "-paso-", Toast.LENGTH_LONG).show();
+            // Toast.makeText(getContext(), "-No Paso-", Toast.LENGTH_LONG).show();
+            String numeroseguro = c.getString(0);//aqui marca el error
+            //Toast.makeText(getContext(), "-paso-", Toast.LENGTH_LONG).show();
 
-            String Nombre = cursor.getString(1);
-            String hora = cursor.getString(2);
-            ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
+            String Nombre = c.getString(1);
+            Toast.makeText(getContext(), Nombre, Toast.LENGTH_LONG).show();
+            String hora = c.getString(2);
+
+
             listatrabajosConfinados.add(new trabajoConfinado(Nombre, numeroseguro, hora, 3 * 60 * 1000));
-            tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
-            listView.setAdapter(tCAdapter);
+
 
             c.close();
         }
+        tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
+        listView.setAdapter(tCAdapter);
         return view;
+
         /*ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
         listatrabajosConfinados.add(new trabajoConfinado("kitzia yanez", "455445342552", "23:56", 3 * 60 * 1000));
         listatrabajosConfinados.add(new trabajoConfinado("Marvin Tinoco", "4564534536456", "65:36", 3 * 60 * 1000));

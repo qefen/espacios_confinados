@@ -30,6 +30,8 @@ import java.util.Date;
 public class RegTrabajadores extends Fragment {
     EditText numseg, nombemp;
     Button insertar, scanner;
+
+    //declaramos variables que obtienen datos
     String numeroSeguro, nombree, time;
     int cntid;
 
@@ -62,12 +64,13 @@ public class RegTrabajadores extends Fragment {
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento
             nombemp.setVisibility(View.GONE);
+            //Aqui mandamos a pedir el nombre de cierto numero de seguro
             Toast.makeText(getActivity(), "Si hay internet", Toast.LENGTH_SHORT).show();
         } else {
             // No hay conexión a Internet en este momento
             nombemp.setVisibility(View.VISIBLE);
-            nombree = nombemp.getText().toString();
-            Toast.makeText(getActivity(), "No hay internet", Toast.LENGTH_SHORT).show();
+
+
         }
 
         //al hacer clic
@@ -76,6 +79,8 @@ public class RegTrabajadores extends Fragment {
             public void onClick(View view) {
                 intentoLogin(numseg.getText().toString());
                 numeroSeguro = numseg.getText().toString();
+                nombree = nombemp.getText().toString();
+                Toast.makeText(getActivity(), "Este es el nombre"+nombree, Toast.LENGTH_SHORT).show();
                 registrarTrabajador();
             }
         });
@@ -103,8 +108,6 @@ public class RegTrabajadores extends Fragment {
             focusView.requestFocus();
         } else {
             //Mensaje de espera + inicio de tarea para login
-
-
             //Intent intent = new Intent(getActivity(), RegTrabajadores.class);
             //startActivity(intent);
         }
@@ -167,7 +170,7 @@ public class RegTrabajadores extends Fragment {
         consultaid();
         String id_actividad = String.valueOf(cntid);
         String numeroSeguro = numseg.getText().toString();
-        String nombre = nombree;
+        String nombre = nombree.toString();
         String hora = time.toString();
         String estado = "ENTRO";
         ContentValues registro = new ContentValues();
