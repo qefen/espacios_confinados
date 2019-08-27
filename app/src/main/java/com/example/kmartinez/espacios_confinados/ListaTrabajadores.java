@@ -59,7 +59,9 @@ public class ListaTrabajadores extends Fragment {
             cursor.moveToFirst();
             //puede fallar
             //en la base de datos esta como integer, puede ser causa del error
+            Toast.makeText(getContext(), "-No Paso-", Toast.LENGTH_LONG).show();
             String numeroseguro = cursor.getString(0);//aqui marca el error
+            Toast.makeText(getContext(), "-paso-", Toast.LENGTH_LONG).show();
 
             String Nombre = cursor.getString(1);
             String hora = cursor.getString(2);
