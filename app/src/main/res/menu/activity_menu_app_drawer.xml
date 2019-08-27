@@ -7,31 +7,32 @@
         <item
             android:id="@+id/nav_RegAct"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:title="Registro Actividad" />
         <item
             android:id="@+id/nav_RegTrab"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:title="Registro Trabajadores" />
         <item
             android:id="@+id/nav_List"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+            android:title="Lista de Registro" />
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Acciones">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_Guardar"
                 android:icon="@drawable/ic_menu_share"
-                android:title="@string/menu_share" />
+                android:title="Guardar" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_Enviar"
                 android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_send" />
+                android:title="Enviar" />
+            <item
+                android:id="@+id/nav_Salir"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Salir" />
         </menu>
     </item>
 

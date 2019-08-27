@@ -72,7 +72,7 @@ public class RegActividades extends Fragment {
                 //se inicia cuando no hay ningun campo vacio
                 if (op == false) {
                     calcularTmax();
-                    registrarActividad();
+
                     //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "TODOS LOS CAMPOS DEBEN ESTAR LLENOS", Toast.LENGTH_SHORT).show();
@@ -137,17 +137,17 @@ public class RegActividades extends Fragment {
         int conv;
 
         if (seleccion.equals("Hrs")) {
-            conv = (tiempo_int * 60);
+            conv = (tiempo_int * 3600);
             resul_seg = String.valueOf(conv);
             Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
         } else {
             if (seleccion.equals("Min")) {
-                conv = (tiempo_int * 1);
+                conv = (tiempo_int * 60);
                 resul_seg = String.valueOf(conv);
                 Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
             }
         }
-
+        registrarActividad();
     }
 
     private void checar() {

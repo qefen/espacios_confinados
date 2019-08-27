@@ -1,7 +1,10 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,9 +19,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class MenuApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    String var1, var2;
+    int act;
+    EditText a1,a2,a3,a4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +36,13 @@ public class MenuApp extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
+        a1 = (EditText) findViewById(R.id.edtNactividad);
+        a2 = (EditText) findViewById(R.id.edtNarea);
+        a3 = (EditText) findViewById(R.id.edtLugare);
+        a4 = (EditText) findViewById(R.id.edtTiempo);
+
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,7 +58,7 @@ public class MenuApp extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.contenedor, new RegActividades()).commit();
     }
 
@@ -84,7 +99,7 @@ public class MenuApp extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.nav_RegAct) {
             // Handle the camera action
@@ -96,16 +111,43 @@ public class MenuApp extends AppCompatActivity
             //Intent intent = new Intent(getApplicationContext(), ListaTrabajadores.class);
             //startActivity(intent);
             fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
-        } else if (id == R.id.nav_tools) {
+        } else if (id == R.id.nav_Guardar) {
+            consultarActividad();
+        } else if (id == R.id.nav_Enviar) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_Salir) {
 
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void consultarActividad() {
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "actividades", null, 1);
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
+        cursor.moveToFirst();
+        var1 = cursor.getString(0);
+        //Toast.makeText(this, "Comprobando " + var1 + var2, Toast.LENGTH_LONG).show();
+        cursor.close();
+        actualizarRegistro();
+    }
+
+    private void actualizarRegistro() {
+
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "actividades", null, 1);
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        String varestado = "false";
+        ContentValues registro = new ContentValues();
+        registro.put("estado",varestado);
+        int cantidad = baseD.update("actividad",registro, "id_actividad="+var1,null);
+
+        if (cantidad == 1){
+            Toast.makeText(this, "Los Articulos se modificacos", Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(this, "Los Articulos no se modificaron", Toast.LENGTH_LONG).show();
+        }
     }
 }
