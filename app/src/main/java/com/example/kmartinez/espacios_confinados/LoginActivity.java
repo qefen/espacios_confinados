@@ -79,8 +79,7 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         // Set up the login form.
         getSupportActionBar().hide();
-        Intent intent = new Intent(getApplicationContext(), MenuApp.class);
-        startActivity(intent);
+
         mEmailView = (AutoCompleteTextView) findViewById(R.id.nempleado);
         mPasswordView = (EditText) findViewById(R.id.password);
         ConexionSQLiteHelper conn=new ConexionSQLiteHelper(this,"bd_actividad",null,1);

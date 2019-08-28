@@ -63,31 +63,34 @@ public class ListaTrabajadores extends Fragment {
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseDActividad = conn.getWritableDatabase();
         Cursor cursorActividad = baseDActividad.rawQuery("SELECT tiempoMax FROM actividad WHERE estado = 'true';", null);
-        cursorActividad.moveToFirst();
-        tiempoMaximoActividad = cursorActividad.getLong(0);
+        if(cursorActividad.moveToFirst()){
+            tiempoMaximoActividad = cursorActividad.getLong(0);
+
+            //ciclo del tamaño de los registros
+            for (int i = 1; i <= cnt; i++) {
+                //consulta que obtiene ciertos parametros de la bd
+                Cursor c = baseD.rawQuery("SELECT numSegS, nombre, hora FROM trabajador WHERE id_trabajador = '" + i + "';", null);
+                c.moveToFirst();
+                //puede fallar
+                //en la base de datos esta como integer, puede ser causa del error
+                // Toast.makeText(getContext(), "-No Paso-", Toast.LENGTH_LONG).show();
+                String numeroseguro = c.getString(0);//aqui marca el error
+                //Toast.makeText(getContext(), "-paso-", Toast.LENGTH_LONG).show();
+
+                String Nombre = c.getString(1);
+                Toast.makeText(getContext(), Nombre, Toast.LENGTH_LONG).show();
+                String hora = c.getString(2);
+
+                listatrabajosConfinados.add(new trabajoConfinado(Nombre, numeroseguro, hora, tiempoMaximoActividad * 1000));
+                c.close();
+            }
+            tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
+            listView.setAdapter(tCAdapter);
+        }
         cursorActividad.close();
         Log.d("Actividad","Duración:");
 
-        //ciclo del tamaño de los registros
-        for (int i = 1; i <= cnt; i++) {
-            //consulta que obtiene ciertos parametros de la bd
-            Cursor c = baseD.rawQuery("SELECT numSegS, nombre, hora FROM trabajador WHERE id_trabajador = '" + i + "';", null);
-            c.moveToFirst();
-            //puede fallar
-            //en la base de datos esta como integer, puede ser causa del error
-            // Toast.makeText(getContext(), "-No Paso-", Toast.LENGTH_LONG).show();
-            String numeroseguro = c.getString(0);//aqui marca el error
-            //Toast.makeText(getContext(), "-paso-", Toast.LENGTH_LONG).show();
 
-            String Nombre = c.getString(1);
-            Toast.makeText(getContext(), Nombre, Toast.LENGTH_LONG).show();
-            String hora = c.getString(2);
-
-            listatrabajosConfinados.add(new trabajoConfinado(Nombre, numeroseguro, hora, tiempoMaximoActividad * 1000));
-            c.close();
-        }
-        tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
-        listView.setAdapter(tCAdapter);
 
         return view;
 }
