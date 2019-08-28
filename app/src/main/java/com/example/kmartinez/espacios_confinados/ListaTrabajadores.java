@@ -48,50 +48,39 @@ public class ListaTrabajadores extends Fragment {
         View view = inflater.inflate(R.layout.activity_lista_trabajadores, container, false);
         listView = (ListView) view.findViewById(R.id.ListaT);
 
-
-
+        //*******************
         //consulta para ver cuantos registros hay
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
-        SQLiteDatabase baseD = admin.getReadableDatabase();
-        Cursor cursor = baseD.rawQuery("SELECT count(*) FROM trabajador;", null);
-        cursor.moveToFirst();
-        cnt = cursor.getInt(0);
-        Toast.makeText(getContext(), "Cuantos Registros Hay: " + cnt, Toast.LENGTH_LONG).show();
-        cursor.close();
+        ConexionSQLiteHelper connection = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
+        SQLiteDatabase baseTrabajadores = connection.getReadableDatabase();
+        Cursor cursorTrabajadores = baseTrabajadores.rawQuery("SELECT t.numSegS, t.nombre, strftime('%H:%M',hora) AS hora, act.tiempoMax, t.id_trabajador, act.id_actividad  FROM trabajador t INNER JOIN actividad act ON act.id_actividad = t.id_actividad WHERE act.estado='true' AND t.estado = 'ENTRO'", null);
+        Log.d("pre","pre");
+        Log.d("count",String.valueOf(cursorTrabajadores.getCount()));
 
-        //consulta para ver el tiempo máximo permitido por actividad
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
-        SQLiteDatabase baseDActividad = conn.getWritableDatabase();
-        Cursor cursorActividad = baseDActividad.rawQuery("SELECT tiempoMax FROM actividad WHERE estado = 'true';", null);
-        if(cursorActividad.moveToFirst()){
-            tiempoMaximoActividad = cursorActividad.getLong(0);
+        if(cursorTrabajadores.moveToFirst()) {
+            Log.d("count",String.valueOf(cursorTrabajadores.getCount()));
+            do {
 
-            //ciclo del tamaño de los registros
-            for (int i = 1; i <= cnt; i++) {
-                //consulta que obtiene ciertos parametros de la bd
-                Cursor c = baseD.rawQuery("SELECT numSegS, nombre, hora FROM trabajador WHERE id_trabajador = '" + i + "';", null);
-                c.moveToFirst();
-                //puede fallar
-                //en la base de datos esta como integer, puede ser causa del error
-                // Toast.makeText(getContext(), "-No Paso-", Toast.LENGTH_LONG).show();
-                String numeroseguro = c.getString(0);//aqui marca el error
-                //Toast.makeText(getContext(), "-paso-", Toast.LENGTH_LONG).show();
+                Log.d("nseg",cursorTrabajadores.getString(0));
+                Log.d("nombre",cursorTrabajadores.getString(1));
+                Log.d("hora",cursorTrabajadores.getString(2));
+                Log.d("milis",cursorTrabajadores.getString(3));
 
-                String Nombre = c.getString(1);
-                Toast.makeText(getContext(), Nombre, Toast.LENGTH_LONG).show();
-                String hora = c.getString(2);
+                String numeroseguro = cursorTrabajadores.getString(0);//aqui marca el error
+                String Nombre = cursorTrabajadores.getString(1);
+                String hora = cursorTrabajadores.getString(2);
+                long tiempoMaximoActividad = cursorTrabajadores.getLong(3);
+                int id_trabajador = cursorTrabajadores.getInt(4);
+                int id_actividad= cursorTrabajadores.getInt(5);
 
-                listatrabajosConfinados.add(new trabajoConfinado(Nombre, numeroseguro, hora, tiempoMaximoActividad * 1000));
-                c.close();
-            }
+
+                listatrabajosConfinados.add(new trabajoConfinado(id_trabajador, id_actividad, Nombre, numeroseguro, hora, tiempoMaximoActividad * 1000));
+
+            } while(cursorTrabajadores.moveToNext());
+        }
+        cursorTrabajadores.close();
+        //********************
             tCAdapter = new trabajoConfinadoAdapter(ListaTrabajadores.this.getContext(), listatrabajosConfinados);
             listView.setAdapter(tCAdapter);
-        }
-        cursorActividad.close();
-        Log.d("Actividad","Duración:");
-
-
-
         return view;
 }
 }

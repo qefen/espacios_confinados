@@ -32,7 +32,7 @@ public class prueba extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_prueba, container, false);
 
-        conn = new ConexionSQLiteHelper(getContext(), "bd_actividad", null, 1);
+        conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
 
         tv1 = (TextView) view.findViewById(R.id.tv1);
         tv2 = (TextView) view.findViewById(R.id.tv2);
@@ -54,7 +54,7 @@ public class prueba extends Fragment {
 
     private void consultar() {
 
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();

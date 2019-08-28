@@ -6,6 +6,10 @@ package com.example.kmartinez.espacios_confinados;
  * TODO: Analizar qué otros posibles datos se piensan guardar
  */
 public class trabajoConfinado {
+    // Id de la actividad en el que el trabajador está trabajando
+    private int id_actividad;
+    // Id del trabajador
+    private int id_trabajador;
     // Nombre de la actividad en el espacio confinado
     private String rnombre;
     // Seguro social del trabajador
@@ -16,11 +20,30 @@ public class trabajoConfinado {
     private long rhora;
 
 
-    public trabajoConfinado(String rnombre, String rnumeross, String rhrEnt, long rhora) {
+
+    public trabajoConfinado(int id_trabajador, int id_actividad, String rnombre, String rnumeross, String rhrEnt, long rhora) {
+        this.id_trabajador = id_trabajador;
+        this.id_actividad = id_actividad;
         this.rnombre = rnombre;
         this.rnumeross = rnumeross;
         this.rhrEnt = rhrEnt;
         this.rhora = rhora;
+    }
+
+    public int getId_actividad() {
+        return id_actividad;
+    }
+
+    public void setId_actividad(int id_actividad) {
+        this.id_actividad = id_actividad;
+    }
+
+    public int getId_trabajador() {
+        return id_trabajador;
+    }
+
+    public void setId_trabajador(int id_trabajador) {
+        this.id_trabajador = id_trabajador;
     }
 
     public String getRnombre() {

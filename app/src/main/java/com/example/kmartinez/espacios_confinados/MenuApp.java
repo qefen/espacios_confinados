@@ -116,7 +116,7 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_Enviar) {
 
         } else if (id == R.id.nav_Salir) {
-
+            // TODO: cancelar SharedPreferences
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -125,7 +125,7 @@ public class MenuApp extends AppCompatActivity
     }
 
     private void consultarActividad() {
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "actividades", null, 1);
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
@@ -137,7 +137,7 @@ public class MenuApp extends AppCompatActivity
 
     private void actualizarRegistro() {
 
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "actividades", null, 1);
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         String varestado = "false";
         ContentValues registro = new ContentValues();

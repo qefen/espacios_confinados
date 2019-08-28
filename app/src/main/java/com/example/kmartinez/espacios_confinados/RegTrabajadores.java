@@ -180,7 +180,7 @@ public class RegTrabajadores extends Fragment {
     }
 
     private void consultaid() {
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
@@ -189,7 +189,7 @@ public class RegTrabajadores extends Fragment {
     }
 
     private void registrarTrabajador(String ns, String nom) {
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
         Toast.makeText(getContext(), "En el Registro: "+numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
         consultaid();

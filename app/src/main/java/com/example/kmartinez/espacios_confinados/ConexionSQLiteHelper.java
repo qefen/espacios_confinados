@@ -14,8 +14,7 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase EspaciosConfinados) {
         EspaciosConfinados.execSQL("CREATE TABLE actividad(id_actividad INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, nombre TEXT, area TEXT, luEsp TEXT, tiempoMax TEXT, estado TEXT)");
-        EspaciosConfinados.execSQL("CREATE TABLE trabajador(id_trabajador INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, id_actividad INTEGER, numSegS TEXT, nombre TEXT, hora TEXT, estado TEXT)");
-
+        EspaciosConfinados.execSQL("CREATE TABLE trabajador(id_trabajador INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, id_actividad INTEGER, numSegS TEXT, nombre TEXT, hora TEXT, hora_salida TEXT, estado TEXT)");
     }
 
     @Override

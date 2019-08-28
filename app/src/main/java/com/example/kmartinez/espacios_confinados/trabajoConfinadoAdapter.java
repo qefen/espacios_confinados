@@ -1,6 +1,11 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.support.annotation.LayoutRes;
@@ -15,7 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +58,7 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
 
             TextView numero2 = (TextView) listItem.findViewById(R.id.tvNss);
             TextView hre2 = (TextView) listItem.findViewById(R.id.tvhr);
+
             final TextView hora2 = (TextView) listItem.findViewById(R.id.tvTimer);
 
             nombre2.setText(currentTrabajoConfinado.getRnombre());
@@ -75,6 +83,7 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
                         Log.d("Timer","Timer ended");
                         hora2.setText("00:00:00");
                         layoutElement.setBackgroundColor(Color.RED);
+
                     }
                 }.start();
 
@@ -82,10 +91,51 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
             listItem.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
+                    final View item = view;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                    builder
+                            .setMessage("Estas seguro?")
+                            .setPositiveButton("SI",  new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //*******************
+                                    //Actualización del trabajador
+                                    ConexionSQLiteHelper connection = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
+                                    SQLiteDatabase baseTrabajadores = connection.getReadableDatabase();
+                                    String estado = "SALIO";
+                                    String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
+                                    ContentValues registro = new ContentValues();
+                                    registro.put("hora_salida",timeStamp);
+                                    registro.put("estado",estado);
+                                    int count = baseTrabajadores.update("trabajador",registro, "id_trabajador="+currentTrabajoConfinado.getId_trabajador(),null);
+                                    if (count == 1){
+                                        Log.d("Update trabajador","Actualización satisfactoria");
+                                    }
+                                    else {
+                                        Log.d("Update trabajador","Actualización satisfactoria");
+                                    }
+                                    //********************
+                                    item.setVisibility(View.INVISIBLE);
+                                }
+                            })
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,int id) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .show();
+
                     Log.d("clickListener", " onclick  in listItem: " + currentTrabajoConfinado.getRnombre());
-                    if(hora2.getText()=="00:00:00") view.setVisibility(View.INVISIBLE);
+
+
+
+
+
                 }
             });
+
 
         }
         else {
@@ -94,4 +144,5 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
         }
         return listItem;
     }
+
 }

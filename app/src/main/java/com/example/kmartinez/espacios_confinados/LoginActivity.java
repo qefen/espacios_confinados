@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity{
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.nempleado);
         mPasswordView = (EditText) findViewById(R.id.password);
-        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(this,"bd_actividad",null,1);
+        ConexionSQLiteHelper conn=new ConexionSQLiteHelper(this,"eConfinados",null,1);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {

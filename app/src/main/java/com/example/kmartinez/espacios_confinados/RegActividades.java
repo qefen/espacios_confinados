@@ -55,7 +55,7 @@ public class RegActividades extends Fragment {
 
 
 
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT * FROM actividad ;", null);
         cont = cursor.getCount();
@@ -156,7 +156,7 @@ public class RegActividades extends Fragment {
         registrarActividad();
     }
     private void checar() {
-        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         // Busca todas las actividades activas
         Cursor cursor = baseD.rawQuery("SELECT * FROM actividad WHERE estado = 'true';", null);
@@ -199,7 +199,7 @@ public class RegActividades extends Fragment {
     }
 
     private void registrarActividad() {
-        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
 
         String nombAct = nactividad.getText().toString();
