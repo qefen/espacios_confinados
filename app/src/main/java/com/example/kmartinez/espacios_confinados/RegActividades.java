@@ -18,6 +18,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 public class RegActividades extends Fragment {
     EditText nactividad, narea, lugare, tiempo;
@@ -50,16 +53,19 @@ public class RegActividades extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item_registo_actividad, opciones);
         sp.setAdapter(adapter);
 
+
+
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT * FROM actividad ;", null);
         cont = cursor.getCount();
-        Toast.makeText(getContext(), "primer toast " + cnt, Toast.LENGTH_LONG).show();
+        Log.d("RegActividades","onCreateView: count actividades "+cont);
         cursor.close();
+        // Si ya existe datos registrados de la actividad
         if (cont > 0) {
             checar();
         } else {
-            Toast.makeText(getContext(), "Ingresa Los Datos " + cnt, Toast.LENGTH_LONG).show();
+            Log.d("RegActividades","onCreateView: Ingresa Los Datos " + cnt);
         }
 
 
@@ -122,12 +128,6 @@ public class RegActividades extends Fragment {
             focusView.requestFocus();
         } else {
             op = false;
-            //Mensaje de espera + inicio de tarea para login
-
-
-            //Intent intent = new Intent(getActivity(), RegTrabajadores.class);
-            //startActivity(intent);
-
         }
 
     }
@@ -140,27 +140,27 @@ public class RegActividades extends Fragment {
         if (seleccion.equals("Hrs")) {
             conv = (tiempo_int * 3600);
             resul_seg = String.valueOf(conv);
-            Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
+            Log.d("RegActividades","Tiempo en seg" + conv + "seg");
         }
         if (seleccion.equals("Min")) {
-                conv = (tiempo_int * 60);
-                resul_seg = String.valueOf(conv);
-                Toast.makeText(getActivity(), "Tiempo en seg" + conv + "seg", Toast.LENGTH_SHORT).show();
-            }
+            conv = (tiempo_int * 60);
+            resul_seg = String.valueOf(conv);
+            Log.d("RegActividades","Tiempo en seg" + conv + "seg");
+        }
 
         registrarActividad();
     }
-
     private void checar() {
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "actividades", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
+        // Busca todas las actividades activas
         Cursor cursor = baseD.rawQuery("SELECT * FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
         cnt = cursor.getCount();
-        Log.d("Checar","Comprobando " + cnt);
+        Log.d("RegActividades","checar(): Comprobando actividades activas " + cnt);
         //Toast.makeText(getContext(), "Comprobando " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
-
+        // Si cuenta con actividades activas, traer otra vez los datos de la actividad (?)
         if (cnt >= 1) {
             Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE estado = 'true';", null);
             if (c.moveToFirst()) {
@@ -170,11 +170,10 @@ public class RegActividades extends Fragment {
                 tiempo.setText((c.getString(3)));
                 c.close();
             } else {
-                Toast.makeText(getContext(), "Quita este pinche error " + cnt, Toast.LENGTH_LONG).show();
                 c.close();
             }
 
-
+            // Desactivar campos cuando ya hay datos
             nactividad.setEnabled(false);
             narea.setEnabled(false);
             lugare.setEnabled(false);
@@ -182,6 +181,7 @@ public class RegActividades extends Fragment {
             insertar.setEnabled(false);
             sp.setEnabled(false);
         } else {
+            // Si no hay datos registrados, habilitar campos
             if (cnt == 0) {
                 nactividad.setEnabled(true);
                 narea.setEnabled(true);
@@ -202,7 +202,6 @@ public class RegActividades extends Fragment {
         String lugarEsp = lugare.getText().toString();
         String tiempoAct = resul_seg.toString();
         String estadoAct = "true";
-        //Toast.makeText(getContext(),nombAct,Toast.LENGTH_LONG).show();
         ContentValues registro = new ContentValues();
         registro.put("nombre", nombAct);
         registro.put("area", nombArea);
@@ -219,6 +218,5 @@ public class RegActividades extends Fragment {
         tiempo.setEnabled(false);
         sp.setEnabled(false);
         Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
-
     }
 }

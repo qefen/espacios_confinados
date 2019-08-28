@@ -36,6 +36,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -82,14 +83,12 @@ public class RegTrabajadores extends Fragment {
             hasInternet = true;
             nombemp.setVisibility(View.GONE);
             //Aqui mandamos a pedir el nombre de cierto numero de seguro
-            Toast.makeText(getActivity(), "Si hay internet", Toast.LENGTH_SHORT).show();
         } else {
             // No hay conexión a Internet en este momento
             hasInternet = false;
             nombemp.setVisibility(View.VISIBLE);
-
-
         }
+        Log.d("RegTrabajadores","hasInternet: " + String.valueOf(hasInternet));
 
         //al hacer clic
         insertar.setOnClickListener(new View.OnClickListener() {
@@ -134,12 +133,10 @@ public class RegTrabajadores extends Fragment {
     }
 
     public void hora() {
-        Calendar calendario = Calendar.getInstance();
-        long ahora = System.currentTimeMillis();
-        calendario.setTimeInMillis(ahora);
-        int hora = calendario.get(Calendar.HOUR_OF_DAY);
-        int minuto = calendario.get(Calendar.MINUTE);
-        time = hora + ":" + minuto;
+
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
+
+        time = timeStamp;
     }
 
     public void escaner() {
