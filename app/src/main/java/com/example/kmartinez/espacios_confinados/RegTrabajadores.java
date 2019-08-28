@@ -10,9 +10,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +25,21 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class RegTrabajadores extends Fragment {
@@ -106,9 +121,9 @@ public class RegTrabajadores extends Fragment {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            //Mensaje de espera + inicio de tarea para login
-            //Intent intent = new Intent(getActivity(), RegTrabajadores.class);
-            //startActivity(intent);
+            final DoActivity Tarea = new DoActivity(getContext());
+            Tarea.execute(nseg);
+
         }
     }
 
@@ -194,4 +209,110 @@ public class RegTrabajadores extends Fragment {
         nombemp.setText("");
         numseg.setText("");
     }
+    /**
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
+
+    class DoActivity extends AsyncTask<String, String, String> {
+
+        private Context context;
+        protected Progreso progreso;
+        protected Progreso progressResult;
+
+        public DoActivity(Context context) {
+            this.context = context;
+        }
+
+
+        protected void onPreExecute() {
+            progreso = new Progreso("Busqueda de trabajador","Buscando la información. Por favor espere un momento...");
+            progreso.show(getFragmentManager(),"Ejemplo");
+        }
+
+        protected void onPostExecute(String result) {
+            progreso.dismiss();
+            progressResult = new Progreso("","");
+
+            if(result == ""){
+                progressResult.title= "Empleado no encontrado";
+                progressResult.message = result;
+                progressResult.spinnerVisible = false;
+                progressResult.show(getFragmentManager(),"Ejemplo");
+            }
+            else {
+                progressResult.title= "Empleado encontrado";
+                progressResult.message = result;
+                progressResult.spinnerVisible = false;
+                progressResult.show(getFragmentManager(),"Ejemplo");
+            }
+            Log.d("fetchingEmpleado",result);
+
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            String data;
+            String returndata = "Favor de revisar la conexión de su dispositivo.";
+
+            String user = args[0];
+
+            try {
+                // Creating & connection Connection with url and required Header.
+                data = "user="+user;
+                data += "&function=get_name";
+                data += "&version=082019v1_EspaciosConf";
+
+                URL url = new URL("https://sissmac.arcelormittal.com.mx/logistics/AppMovil/espaciosConfinados/EspaciosConfinados.jsp?"+data);
+                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
+                urlConnection.setRequestMethod("POST");   //POST or GET
+//                    urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                urlConnection.connect();
+
+                // Write Request to output stream to server.
+                OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
+
+                out.close();
+                // Check the connection status.
+                int statusCode = urlConnection.getResponseCode();
+                String statusMsg = urlConnection.getResponseMessage();
+
+                // Connection success. Proceed to fetch the response.
+                if (statusCode == 200) {
+                    InputStream it = new BufferedInputStream(urlConnection.getInputStream());
+                    InputStreamReader read = new InputStreamReader(it);
+                    BufferedReader buff = new BufferedReader(read);
+                    StringBuilder dta = new StringBuilder();
+                    String chunks;
+                    while ((chunks = buff.readLine()) != null) {
+                        dta.append(chunks);
+                    }
+                    returndata = dta.toString();
+                    Log.d("Check", returndata);
+
+                }
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                Log.d("Check1", returndata);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("Check2", returndata);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("Check3", returndata);
+            } catch (Exception e) {
+
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+            }
+
+            return returndata.trim();
+        }
+
+
+    }
+
 }
