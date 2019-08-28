@@ -6,15 +6,15 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_RegAct"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ractividad"
             android:title="Registro Actividad" />
         <item
             android:id="@+id/nav_RegTrab"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/rtrabajador"
             android:title="Registro Trabajadores" />
         <item
             android:id="@+id/nav_List"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/rlista"
             android:title="Lista de Registro" />
 
     </group>
@@ -23,15 +23,15 @@
         <menu>
             <item
                 android:id="@+id/nav_Guardar"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/rsave"
                 android:title="Guardar" />
             <item
                 android:id="@+id/nav_Enviar"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/rsend"
                 android:title="Enviar" />
             <item
                 android:id="@+id/nav_Salir"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/rlogout"
                 android:title="Salir" />
         </menu>
     </item>
