@@ -95,7 +95,7 @@ public class trabajoConfinadoAdapter extends ArrayAdapter<trabajoConfinado> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
                     builder
-                            .setMessage("Estas seguro?")
+                            .setMessage("¿El trabajador ha salido?")
                             .setPositiveButton("SI",  new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {

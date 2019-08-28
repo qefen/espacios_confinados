@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -223,5 +224,11 @@ public class RegActividades extends Fragment {
         tiempo.setEnabled(false);
         sp.setEnabled(false);
         Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.contenedor, new RegTrabajadores());
+        transaction.addToBackStack(null);
+        // Commit a la transacción
+        transaction.commit();
     }
 }
