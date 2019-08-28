@@ -75,15 +75,20 @@ public class RegActividades extends Fragment {
             public void onClick(View view) {
                 //Avisa que hay campos vacios
                 intentoLogin(nactividad.getText().toString(), narea.getText().toString(), lugare.getText().toString(), tiempo.getText().toString());
+                if (tiempo.getText().toString().equals("0")){
+                    Toast.makeText(getActivity(), "El Valor de el tiempo no puede ser: 0", Toast.LENGTH_SHORT).show();
+                    tiempo.setText("");
+                }else{
+                    //se inicia cuando no hay ningun campo vacio
+                    if (op == false) {
+                        calcularTmax();
 
-                //se inicia cuando no hay ningun campo vacio
-                if (op == false) {
-                    calcularTmax();
-
-                    //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), "TODOS LOS CAMPOS DEBEN ESTAR LLENOS", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "Esto funciona.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "TODOS LOS CAMPOS DEBEN ESTAR LLENOS", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
             }
         });
 

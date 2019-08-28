@@ -149,6 +149,7 @@ public class RegTrabajadores extends Fragment {
         intent.initiateScan();
     }
 
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Toast.makeText(getActivity(), "ESCANER INICIADO", Toast.LENGTH_SHORT).show();
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
