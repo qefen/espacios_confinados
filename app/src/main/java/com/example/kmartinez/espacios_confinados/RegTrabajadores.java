@@ -45,6 +45,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class RegTrabajadores extends Fragment {
     EditText numseg, nombemp;
     Button insertar, scanner;
+    boolean hasInternet;
 
     //declaramos variables que obtienen datos
     String numeroSeguro, nombree, time;
@@ -78,11 +79,13 @@ public class RegTrabajadores extends Fragment {
         //condiciones
         if (networkInfo != null && networkInfo.isConnected()) {
             // Si hay conexión a Internet en este momento
+            hasInternet = true;
             nombemp.setVisibility(View.GONE);
             //Aqui mandamos a pedir el nombre de cierto numero de seguro
             Toast.makeText(getActivity(), "Si hay internet", Toast.LENGTH_SHORT).show();
         } else {
             // No hay conexión a Internet en este momento
+            hasInternet = false;
             nombemp.setVisibility(View.VISIBLE);
 
 
@@ -92,11 +95,13 @@ public class RegTrabajadores extends Fragment {
         insertar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intentoLogin(numseg.getText().toString());
-                numeroSeguro = numseg.getText().toString();
-                nombree = nombemp.getText().toString();
-                Toast.makeText(getActivity(), "Este es el nombre" + nombree, Toast.LENGTH_SHORT).show();
-                registrarTrabajador();
+                validarNumSeg(numseg.getText().toString());
+                if(!hasInternet){
+                    numeroSeguro = numseg.getText().toString();
+                    nombree = nombemp.getText().toString();
+                    Toast.makeText(getActivity(), "Este es el nombre" + nombree, Toast.LENGTH_SHORT).show();
+                    registrarTrabajador(numeroSeguro,nombree);
+                }
             }
         });
         scanner.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +114,7 @@ public class RegTrabajadores extends Fragment {
         return view;
     }
 
-    private void intentoLogin(String nseg) {
+    private void validarNumSeg(String nseg) {
         boolean cancel = false;
         View focusView = null;
         //Validar usuario
@@ -121,9 +126,10 @@ public class RegTrabajadores extends Fragment {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            final DoActivity Tarea = new DoActivity(getContext());
-            Tarea.execute(nseg);
-
+            if(hasInternet){
+                final DoActivity Tarea = new DoActivity(getContext());
+                Tarea.execute(nseg);
+            }
         }
     }
 
@@ -172,7 +178,7 @@ public class RegTrabajadores extends Fragment {
         numeroSeguro = ns;
         nombree = nom;
         Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
-        registrarTrabajador();
+        registrarTrabajador(numeroSeguro, nombree);
     }
 
     private void consultaid() {
@@ -184,15 +190,15 @@ public class RegTrabajadores extends Fragment {
         cursor.close();
     }
 
-    private void registrarTrabajador() {
+    private void registrarTrabajador(String ns, String nom) {
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
         Toast.makeText(getContext(), "En el Registro: "+numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
         consultaid();
 
         String id_actividad = String.valueOf(cntid);
-        String numeroSeguro1 = numeroSeguro.toString();
-        String nombre = nombree.toString();
+        String numeroSeguro1 = ns;
+        String nombre = nom;
         String hora = time.toString();
         String estado = "ENTRO";
         ContentValues registro = new ContentValues();
@@ -233,21 +239,20 @@ public class RegTrabajadores extends Fragment {
         protected void onPostExecute(String result) {
             progreso.dismiss();
             progressResult = new Progreso("","");
-
-            if(result == ""){
-                progressResult.title= "Empleado no encontrado";
-                progressResult.message = result;
+            nombree = result;
+            if(result.compareTo("")==0){
+                progressResult.title= "Trabajador no encontrado";
+                progressResult.message = "Favor de revisar el número ingresado";
                 progressResult.spinnerVisible = false;
                 progressResult.show(getFragmentManager(),"Ejemplo");
             }
             else {
-                progressResult.title= "Empleado encontrado";
+                progressResult.title= "Trabajador encontrado";
                 progressResult.message = result;
                 progressResult.spinnerVisible = false;
                 progressResult.show(getFragmentManager(),"Ejemplo");
+                registrarTrabajador(numseg.getText().toString(),result);
             }
-            Log.d("fetchingEmpleado",result);
-
         }
 
         @Override
