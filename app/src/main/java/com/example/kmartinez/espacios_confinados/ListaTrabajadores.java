@@ -28,7 +28,8 @@ import java.util.ArrayList;
 public class ListaTrabajadores extends Fragment {
     private ListView listView;
     private trabajoConfinadoAdapter tCAdapter;
-    int cnt;
+    int cnt, cnt1;
+    String cnt2;
     ArrayList<trabajoConfinado> listatrabajosConfinados = new ArrayList<>();
 
 
@@ -46,14 +47,18 @@ public class ListaTrabajadores extends Fragment {
         View view = inflater.inflate(R.layout.activity_lista_trabajadores, container, false);
         listView = (ListView) view.findViewById(R.id.ListaT);
 
+
+
         //consulta para ver cuantos registros hay
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "trabajador", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT count(*) FROM trabajador;", null);
         cursor.moveToFirst();
         cnt = cursor.getInt(0);
-        Toast.makeText(getContext(), "texto: " + cnt, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Cuantos Registros Hay: " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
+
+
 
         //ciclo del tamaño de los registros
         for (int i = 1; i <= cnt; i++) {
