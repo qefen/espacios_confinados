@@ -145,7 +145,7 @@ public class MenuApp extends AppCompatActivity
         int cantidad = baseD.update("actividad",registro, "id_actividad="+var1,null);
 
         if (cantidad == 1){
-            Toast.makeText(this, "Los Articulos se modificacos", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Los Articulos se modificaron", Toast.LENGTH_LONG).show();
 
 
         }else{

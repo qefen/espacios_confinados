@@ -134,8 +134,7 @@ public class RegTrabajadores extends Fragment {
 
     public void hora() {
 
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
-
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
         time = timeStamp;
     }
 
