@@ -25,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-
+// TODO: Implementación del RecyclerView
 public class ListaTrabajadores extends Fragment {
     private ListView listView;
     private trabajoConfinadoAdapter tCAdapter;
