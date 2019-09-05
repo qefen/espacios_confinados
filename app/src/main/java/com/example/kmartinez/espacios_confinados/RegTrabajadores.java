@@ -49,7 +49,7 @@ public class RegTrabajadores extends Fragment {
     boolean hasInternet;
 
     //declaramos variables que obtienen datos
-    String numeroSeguro, nombree, time;
+    String numeroSeguro, nombree;
     int cntid;
 
     @Override
@@ -71,7 +71,7 @@ public class RegTrabajadores extends Fragment {
         numseg = (EditText) view.findViewById(R.id.edtNss);
         insertar = (Button) view.findViewById(R.id.btnInsertar);
         scanner = (Button) view.findViewById(R.id.btnScanner);
-        hora();
+
         //Toast.makeText(getActivity(), "This is The hour: " + time, Toast.LENGTH_SHORT).show();
 
         //comprueba si hay red
@@ -132,10 +132,6 @@ public class RegTrabajadores extends Fragment {
         }
     }
 
-    public void hora() {
-
-        time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-    }
 
     public void escaner() {
         IntentIntegrator intent = IntentIntegrator.forSupportFragment(RegTrabajadores.this);
@@ -148,20 +144,24 @@ public class RegTrabajadores extends Fragment {
     }
 
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getActivity(), "ESCANER INICIADO", Toast.LENGTH_SHORT).show();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) throws java.lang.ArrayIndexOutOfBoundsException{
+        //Toast.makeText(getActivity(), "ESCANER INICIADO", Toast.LENGTH_SHORT).show();
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
 
-                Toast.makeText(getContext(), "La lectura de informacion ha sido cancelada.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "La lectura de informacion ha sido cancelada.", Toast.LENGTH_SHORT).show();
 
             } else {
                 //convertimos el texto extraido del qr en cadena de texto se separa cada que encuentra una ,
                 String[] num = result.getContents().toString().split(",");
                 //quitamos espacios
+                try {
+                    receptor(num[0].trim(), num[2]);
+                } catch (java.lang.ArrayIndexOutOfBoundsException e) {
+                    Toast.makeText(getActivity(), "Error en el escaneo. Intente nuevamente o ingrese NSS", Toast.LENGTH_LONG).show();
 
-                receptor(num[0].trim(), num[2]);
+                }
                 //
                 // TODO: Validar que solo sean el tipo de credenciales que se manejan, y no otro tipo de código
             }
@@ -173,7 +173,7 @@ public class RegTrabajadores extends Fragment {
     public void receptor(String ns, String nom) {
         numeroSeguro = ns;
         nombree = nom;
-        Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), numeroSeguro + "--" + nombree, Toast.LENGTH_SHORT).show();
         registrarTrabajador(numeroSeguro, nombree);
     }
 
@@ -195,7 +195,7 @@ public class RegTrabajadores extends Fragment {
         String id_actividad = String.valueOf(cntid);
         String numeroSeguro1 = ns;
         String nombre = nom;
-        String hora = time.toString();
+        String hora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String estado = "ENTRO";
         ContentValues registro = new ContentValues();
         registro.put("id_actividad", id_actividad);

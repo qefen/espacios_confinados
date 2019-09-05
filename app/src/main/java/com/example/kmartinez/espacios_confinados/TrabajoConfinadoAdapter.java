@@ -22,6 +22,10 @@ import java.util.List;
 
 public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfinadoAdapter.ViewHolder> {
 
+    ConexionSQLiteHelper connection;
+    SQLiteDatabase DB;
+
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CountDownTimer timer;
@@ -44,14 +48,14 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
 
             itemView.setOnClickListener(this);
         }
-
         @Override
         public void onClick(final View v) {
             final int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 final TrabajoConfinado trabajoConfinado = mTrabajosConfinados.get(position);
                 Log.d("Clicked",trabajoConfinado.getNombreTrabajador());
-
+                Log.d("Clicked.activity",String.valueOf(trabajoConfinado.getIdActividad()));
+                Log.d("Clicked.id_Trabajador",String.valueOf(trabajoConfinado.getIdTrabajador()));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
 
@@ -62,26 +66,23 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                             public void onClick(DialogInterface dialog, int id) {
                                 //*******************
                                 //Actualización del trabajador
-                                ConexionSQLiteHelper connection = new ConexionSQLiteHelper(v.getContext(), "eConfinados", null, 1);
-                                SQLiteDatabase baseTrabajadores = connection.getReadableDatabase();
-                                String estado = "SALIO";
-                                String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
                                 ContentValues registro = new ContentValues();
 
-                                registro.put("hora_salida",timeStamp);
-                                registro.put("estado",estado);
-                                Log.d("Hora salida",timeStamp);
+                                registro.put("hora_salida",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                                registro.put("estado","SALIO");
 
-                                int count = baseTrabajadores.update("trabajador",registro, "id_trabajador="+trabajoConfinado.getIdTrabajador(),null);
+                                int count = DB.update("trabajador",registro, "id_trabajador=?",new String[]{String.valueOf(trabajoConfinado.getIdTrabajador())});
+
                                 if (count == 1){
-                                    Log.d("Update trabajador","Actualización satisfactoria");
+                                    Log.d("Update trabajador","Actualización satisfactoria a "+trabajoConfinado.getNombreTrabajador());
+                                    mTrabajosConfinados.remove(position);
+                                    notifyItemRemoved(position);
                                 }
                                 else {
-                                    Log.d("Update trabajador","Actualización satisfactoria");
+                                    Log.d("Update trabajador","No hubo actualización");
                                 }
                                 //********************
-                                mTrabajosConfinados.remove(position);
-                                notifyItemRemoved(position);
+
                             }
                         })
                         .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -97,7 +98,9 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
 
     private List<TrabajoConfinado> mTrabajosConfinados;
 
-    public TrabajoConfinadoAdapter(List<TrabajoConfinado> trabajosConfinados) {
+    public TrabajoConfinadoAdapter(Context context, List<TrabajoConfinado> trabajosConfinados) {
+        connection =  new ConexionSQLiteHelper(context, "eConfinados", null, 1);
+        DB = connection.getWritableDatabase();
         mTrabajosConfinados = trabajosConfinados;
         Log.d("Adapter","Object adapter Created");
 
