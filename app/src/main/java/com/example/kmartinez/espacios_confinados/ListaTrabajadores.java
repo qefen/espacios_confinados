@@ -69,6 +69,9 @@ public class ListaTrabajadores extends Fragment {
         rvTrabajoConfinado.setAdapter(tCAdapter);
         // La manera en la que se distribuyen los elementos
         rvTrabajoConfinado.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        rvTrabajoConfinado.addItemDecoration(itemDecoration);
 
 
 

@@ -2,6 +2,7 @@ package com.example.kmartinez.espacios_confinados;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -189,7 +191,7 @@ public class RegTrabajadores extends Fragment {
     private void registrarTrabajador(String ns, String nom) {
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
-        Toast.makeText(getContext(), "En el Registro: "+numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getContext(), "En el Registro: "+numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
         consultaid();
 
         String id_actividad = String.valueOf(cntid);
@@ -207,7 +209,7 @@ public class RegTrabajadores extends Fragment {
         baseD.insert("trabajador", null, registro);
         baseD.close();
 
-        Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
         nombemp.setText("");
         numseg.setText("");
     }
@@ -222,6 +224,7 @@ public class RegTrabajadores extends Fragment {
         protected Progreso progreso;
         protected Progreso progressResult;
 
+
         public DoActivity(Context context) {
             this.context = context;
         }
@@ -234,20 +237,33 @@ public class RegTrabajadores extends Fragment {
 
         protected void onPostExecute(String result) {
             progreso.dismiss();
-            progressResult = new Progreso("","");
+
             nombree = result;
             if(result.compareTo("")==0){
-                progressResult.title= "Trabajador no encontrado";
-                progressResult.message = "Favor de revisar el número ingresado";
-                progressResult.spinnerVisible = false;
-                progressResult.show(getFragmentManager(),"Ejemplo");
+
+                AlertDialog.Builder busquedaTrabajador = new AlertDialog.Builder(getContext());
+                busquedaTrabajador
+                        .setMessage("Trabajador No Encontrado\nIntente de nuevo")
+                        .setPositiveButton("Continuar",  new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
+
+
             }
             else {
-                progressResult.title= "Trabajador encontrado";
-                progressResult.message = result;
-                progressResult.spinnerVisible = false;
-                progressResult.show(getFragmentManager(),"Ejemplo");
                 registrarTrabajador(numseg.getText().toString(),result);
+                AlertDialog.Builder busquedaTrabajador = new AlertDialog.Builder(getContext());
+                busquedaTrabajador
+                        .setMessage("Trabajador Encontrado\n(" + result + ")")
+                        .setPositiveButton("Continuar",  new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
             }
         }
 

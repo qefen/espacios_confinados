@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -207,9 +208,25 @@ public class LoginActivity extends AppCompatActivity{
                 if(getEmpleado() == "undefined" || getPassword() == "undefined") {
                     saveCredentials(mEmailView.getText().toString(), mPasswordView.getText().toString());
                 }
-
+                // VALIDACIOÓN SUCCESS
                 Intent intent = new Intent(getApplicationContext(), MenuApp.class);
                 startActivity(intent);
+
+                //*******************
+                // Traer los trabajadores que están activos
+                ConexionSQLiteHelper connection = new ConexionSQLiteHelper(getApplicationContext(), "eConfinados", null, 1);
+                SQLiteDatabase baseTrabajadores = connection.getReadableDatabase();
+                Cursor trabajadoresActivos = baseTrabajadores.rawQuery("SELECT act.id_actividad FROM trabajador t INNER JOIN actividad act ON act.id_actividad = t.id_actividad WHERE act.estado='true' AND t.estado != 'SALIO'", null);
+                Log.d("Comprobar datos",String.valueOf(trabajadoresActivos.getCount()));
+                trabajadoresActivos.close();
+                //********************
+                if (trabajadoresActivos.getCount() > 0) {
+                    Intent mintent = new Intent(getApplicationContext(), ListaTrabajadores.class);
+                    startActivity(intent);
+                } else {
+                    Intent mintent = new Intent(getApplicationContext(), MenuApp.class);
+                    startActivity(intent);
+                }
             }
             else{
 

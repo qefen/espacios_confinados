@@ -1,11 +1,16 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,15 +25,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static android.content.Context.VIBRATOR_SERVICE;
+
 public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfinadoAdapter.ViewHolder> {
 
     ConexionSQLiteHelper connection;
     SQLiteDatabase DB;
+    Context context;
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        CountDownTimer timer;
         private Context context;
 
         LinearLayout wrapper;
@@ -56,33 +63,13 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                 Log.d("Clicked",trabajoConfinado.getNombreTrabajador());
                 Log.d("Clicked.activity",String.valueOf(trabajoConfinado.getIdActividad()));
                 Log.d("Clicked.id_Trabajador",String.valueOf(trabajoConfinado.getIdTrabajador()));
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-
-                builder
-                        .setMessage("¿El trabajador ha salido?")
+                AlertDialog.Builder confirmarSacarTrabajador = new AlertDialog.Builder(v.getContext());
+                confirmarSacarTrabajador
+                        .setMessage("¿El trabajador ha salido?\n(" + trabajoConfinado.getNombreTrabajador() + ")")
                         .setPositiveButton("SI",  new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                //*******************
-                                //Actualización del trabajador
-                                ContentValues registro = new ContentValues();
-
-                                registro.put("hora_salida",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                                registro.put("estado","SALIO");
-
-                                int count = DB.update("trabajador",registro, "id_trabajador=?",new String[]{String.valueOf(trabajoConfinado.getIdTrabajador())});
-
-                                if (count == 1){
-                                    Log.d("Update trabajador","Actualización satisfactoria a "+trabajoConfinado.getNombreTrabajador());
-                                    mTrabajosConfinados.remove(position);
-                                    notifyItemRemoved(position);
-                                }
-                                else {
-                                    Log.d("Update trabajador","No hubo actualización");
-                                }
-                                //********************
-
+                                sacarTrabajador(trabajoConfinado, position);
                             }
                         })
                         .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -90,15 +77,44 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
-                        })
-                        .show();
+                        });
+
+                if(trabajoConfinado.tieneTiempoPendiente()){
+                    confirmarSacarTrabajador.show();
+                }
+                else {
+                    sacarTrabajador(trabajoConfinado, position);
+                }
+
             }
+        }
+        public void sacarTrabajador(TrabajoConfinado tc, int listPosition){
+            //*******************
+            //Actualización del trabajador
+            ContentValues registro = new ContentValues();
+
+            registro.put("hora_salida",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            registro.put("estado","SALIO");
+
+            int count = DB.update("trabajador",registro, "id_trabajador=?",new String[]{String.valueOf(tc.getIdTrabajador())});
+
+            if (count == 1){
+                Log.d("Update trabajador","Actualización satisfactoria a "+tc.getNombreTrabajador());
+                mTrabajosConfinados.remove(listPosition);
+                notifyItemRemoved(listPosition);
+                if (tc.timer != null) tc.timer.cancel();
+            }
+            else {
+                Log.d("Update trabajador","No hubo actualización");
+            }
+            //********************
         }
     }
 
     private List<TrabajoConfinado> mTrabajosConfinados;
 
     public TrabajoConfinadoAdapter(Context context, List<TrabajoConfinado> trabajosConfinados) {
+        this.context = context;
         connection =  new ConexionSQLiteHelper(context, "eConfinados", null, 1);
         DB = connection.getWritableDatabase();
         mTrabajosConfinados = trabajosConfinados;
@@ -128,6 +144,7 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         final TrabajoConfinado trabajoconfinado = mTrabajosConfinados.get(position);
         Log.d("Bind","Binding data"+trabajoconfinado.getNombreTrabajador());
         Log.d("Bind: Hora entrada", trabajoconfinado.getHoraEntrada());
+        Log.d("CountDown","Tiempo pendiente: " + trabajoconfinado.getTiempoRestanteMillis());
 
         // Muestra los datos del modelo en el elemento de la lista
         final LinearLayout listElement = viewHolder.wrapper;
@@ -142,25 +159,55 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         tvTiempoPendiente.setText(trabajoconfinado.getTiempoRestanteHHMMSS());
 
         //CountDowmTimer
-        if(viewHolder.timer != null) {
-            viewHolder.timer.cancel();
+        if(trabajoconfinado.timer != null) {
+            trabajoconfinado.timer.cancel();
         }
-        viewHolder.timer = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-              tvTiempoPendiente.setText(trabajoconfinado.getTiempoRestanteHHMMSS());
-            }
+        // Si todavia no se vence el tiempo
+        if (trabajoconfinado.tieneTiempoPendiente()) {
+            listElement.setBackgroundColor(Color.TRANSPARENT); // Previene que el elemento se pinte de rojo
 
-            @Override
-            public void onFinish() {
-                listElement.setBackgroundColor(Color.rgb(255,83,13));
-                tvTiempoPendiente.setText("00:00:00");
-            }
-        }.start();
+            trabajoconfinado.timer = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    tvTiempoPendiente.setText(trabajoconfinado.getTiempoRestanteHHMMSS());
+                }
+
+                @Override
+                public void onFinish() {
+                    Log.d("onFinish","triggered");
+                    listElement.setBackgroundColor(Color.rgb(255,83,13));
+                    tvTiempoPendiente.setText("00:00:00");
+                    createNotification(trabajoconfinado.getIdTrabajador(),"Trabajo confinado","Tiempo terminado: " +trabajoconfinado.getNombreTrabajador(),"10");
+                    final Vibrator v = (Vibrator)  context.getSystemService(VIBRATOR_SERVICE);
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(300);
+                    }
+                }
+            }.start();
+        }
+        else {
+            listElement.setBackgroundColor(Color.rgb(255,83,13));
+            tvTiempoPendiente.setText("00:00:00");
+        }
     }
     @Override
     public int getItemCount() {
         return mTrabajosConfinados.size();
 
+    }
+
+    private void createNotification(int nId,String title, String body, String channelId) {
+        // Usage: createNotification(trabajoconfinado.getIdTrabajador(),"Trabajo confinado","Tiempo terminado: " +trabajoconfinado.getNombreTrabajador(),"10");
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                context, channelId).setSmallIcon(R.drawable.mittal)
+                .setContentTitle(title)
+                .setContentText(body);
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(nId, mBuilder.build());
     }
 }

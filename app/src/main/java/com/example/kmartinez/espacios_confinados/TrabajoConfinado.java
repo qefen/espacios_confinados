@@ -1,5 +1,6 @@
 package com.example.kmartinez.espacios_confinados;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +26,8 @@ public class TrabajoConfinado {
     private String horaEntrada;
     // Tiempo maximo (segundos) que tiene permitido el trabajador dentro del espacio confinado
     private long duracionTrabajo;
+
+    CountDownTimer timer;
 
     public TrabajoConfinado(int idActividad, int idTrabajador, String nombreTrabajador, String numeroSeguroSocial, String horaEntrada, long duracionTrabajo) {
         this.idActividad = idActividad;
@@ -113,5 +116,8 @@ public class TrabajoConfinado {
             return 0;
         }
         return this.getDuracionTrabajo() - (nowInMillis - horaEntradaInMillis);
+    }
+    public boolean tieneTiempoPendiente() {
+        return this.getTiempoRestanteMillis() > 0 ;
     }
 }
