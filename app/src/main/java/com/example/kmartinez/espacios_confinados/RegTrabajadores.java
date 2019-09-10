@@ -52,7 +52,7 @@ public class RegTrabajadores extends Fragment {
 
     //declaramos variables que obtienen datos
     String numeroSeguro, nombree;
-    int cntid;
+    int cntid, usrReg;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -188,30 +188,58 @@ public class RegTrabajadores extends Fragment {
         cursor.close();
     }
 
+    private void consulta_trabExist(String ns) {
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
+        SQLiteDatabase baseD = conn.getWritableDatabase();
+        consultaid();
+        Log.d("consulta_trabExist","numero de Seguro: "+ns);
+        Log.d("consulta_trabExist","contador id: "+cntid);
+        Cursor cursor = baseD.rawQuery("SELECT id_trabajador FROM trabajador WHERE numSegS = "+ns+" AND estado = 'ENTRO' AND id_actividad = "+cntid+" ;", null);
+        cursor.moveToFirst();
+        usrReg = cursor.getCount();
+        Log.d("consulta_trabExist","Contador: "+usrReg);
+        cursor.close();
+    }
+
     private void registrarTrabajador(String ns, String nom) {
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = conn.getWritableDatabase();
         //Toast.makeText(getContext(), "En el Registro: "+numeroSeguro + "--" + nombree, Toast.LENGTH_LONG).show();
         consultaid();
+        consulta_trabExist(ns);
 
-        String id_actividad = String.valueOf(cntid);
-        String numeroSeguro1 = ns;
-        String nombre = nom;
-        String hora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String estado = "ENTRO";
-        ContentValues registro = new ContentValues();
-        registro.put("id_actividad", id_actividad);
-        registro.put("numSegS", numeroSeguro1);
-        registro.put("nombre", nombre);
-        registro.put("hora", hora);
-        registro.put("estado", estado);
+        int aux = usrReg;
+        if (aux > 0) {
+            Log.d("registrarTrabajador","Entro en la condicion");
 
-        baseD.insert("trabajador", null, registro);
-        baseD.close();
+            AlertDialog.Builder confirmarSacarTrabajador = new AlertDialog.Builder(this.getContext());
+            confirmarSacarTrabajador
+                    .setMessage("El trabajador ya se encuentra adentro del espacio confinado")
+                    .setPositiveButton("OK",  new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    }).show();
+        } else {
+            String id_actividad = String.valueOf(cntid);
+            String numeroSeguro1 = ns;
+            String nombre = nom;
+            String hora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            String estado = "ENTRO";
+            ContentValues registro = new ContentValues();
+            registro.put("id_actividad", id_actividad);
+            registro.put("numSegS", numeroSeguro1);
+            registro.put("nombre", nombre);
+            registro.put("hora", hora);
+            registro.put("estado", estado);
+            baseD.insert("trabajador", null, registro);
+            baseD.close();
 
-        //Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
-        nombemp.setText("");
-        numseg.setText("");
+            //Toast.makeText(getActivity(), "Registo Exitoso", Toast.LENGTH_SHORT).show();
+            nombemp.setText("");
+            numseg.setText("");
+        }
     }
     /**
      * Represents an asynchronous login/registration task used to authenticate
