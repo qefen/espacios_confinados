@@ -164,6 +164,8 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         }
         // Si todavia no se vence el tiempo
         if (trabajoconfinado.tieneTiempoPendiente()) {
+            Log.d("pendiente","tiene tiempo pendiente");
+
             listElement.setBackgroundColor(Color.TRANSPARENT); // Previene que el elemento se pinte de rojo
 
             trabajoconfinado.timer = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1000) {
@@ -177,12 +179,14 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                     Log.d("onFinish","triggered");
                     listElement.setBackgroundColor(Color.rgb(255,83,13));
                     tvTiempoPendiente.setText("00:00:00");
-                    createNotification(trabajoconfinado.getIdTrabajador(),"Trabajo confinado","Tiempo terminado: " +trabajoconfinado.getNombreTrabajador(),"10");
+                    // NOTIFICACIÓN
+                    //createNotification(trabajoconfinado.getIdTrabajador(),"Trabajo confinado","Tiempo terminado: " +trabajoconfinado.getNombreTrabajador(),"10");
+                    // VIBRACIÓN
                     final Vibrator v = (Vibrator)  context.getSystemService(VIBRATOR_SERVICE);
                     if (Build.VERSION.SDK_INT >= 26) {
-                        ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE));
+                        ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(600, 255));
                     } else {
-                        ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(300);
+                        ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(600);
                     }
                 }
             }.start();
@@ -190,6 +194,9 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         else {
             listElement.setBackgroundColor(Color.rgb(255,83,13));
             tvTiempoPendiente.setText("00:00:00");
+            if(trabajoconfinado.timer != null) {
+                trabajoconfinado.timer.cancel();
+            }
         }
     }
     @Override
