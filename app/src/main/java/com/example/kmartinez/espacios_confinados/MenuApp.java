@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -58,8 +59,19 @@ public class MenuApp extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        boolean trabajadoresActivos = false;
+        if (getIntent().hasExtra("trabajadoresActivos")) {
+            trabajadoresActivos = getIntent().getExtras().getBoolean("trabajadoresActivos");
+        }
+        Log.d("IntentFragmentResult",String.valueOf(trabajadoresActivos));
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.contenedor, new RegActividades()).commit();
+        if(trabajadoresActivos) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
+        } else {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new RegActividades()).commit();
+        }
+
     }
 
     @Override
