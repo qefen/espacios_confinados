@@ -1,6 +1,7 @@
 package com.example.kmartinez.espacios_confinados;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -25,9 +27,10 @@ import android.widget.Toast;
 
 public class MenuApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    String var1, var2;
+    int var1, var2;
     int act;
-    EditText a1,a2,a3,a4;
+    EditText a1, a2, a3, a4;
+    FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,6 @@ public class MenuApp extends AppCompatActivity
         a2 = (EditText) findViewById(R.id.edtNarea);
         a3 = (EditText) findViewById(R.id.edtLugare);
         a4 = (EditText) findViewById(R.id.edtTiempo);
-
 
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -63,10 +65,10 @@ public class MenuApp extends AppCompatActivity
         if (getIntent().hasExtra("trabajadoresActivos")) {
             trabajadoresActivos = getIntent().getExtras().getBoolean("trabajadoresActivos");
         }
-        Log.d("IntentFragmentResult",String.valueOf(trabajadoresActivos));
+        Log.d("IntentFragmentResult", String.valueOf(trabajadoresActivos));
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if(trabajadoresActivos) {
+        if (trabajadoresActivos) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
         } else {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegActividades()).commit();
@@ -111,7 +113,7 @@ public class MenuApp extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+
 
         if (id == R.id.nav_RegAct) {
             // Handle the camera action
@@ -141,10 +143,31 @@ public class MenuApp extends AppCompatActivity
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
-        var1 = cursor.getString(0);
-        //Toast.makeText(this, "Comprobando " + var1 + var2, Toast.LENGTH_LONG).show();
+        var1 = cursor.getInt(0);
         cursor.close();
-        actualizarRegistro();
+        //verificamos si hay trabajadores adentro para evitar el guardado de la actividad.
+        Cursor vacio = baseD.rawQuery("SELECT id_trabajador FROM trabajador WHERE estado = 'ENTRO' AND id_actividad = " + var1 + ";", null);
+        Log.d("consultarActividad", "Entro en la segunda consulta");
+        vacio.moveToFirst();
+        var2 = vacio.getCount();
+        //Toast.makeText(this, "Comprobando " + var1 + var2, Toast.LENGTH_LONG).show();
+        vacio.close();
+
+        if (var2 > 0) {
+            Log.d("consultarActividad", "Aun hay trabajadores en el area.");
+            AlertDialog.Builder confirmarSacarTrabajador = new AlertDialog.Builder(this);
+            confirmarSacarTrabajador
+                    .setMessage("NO SE PERMITE ESTA ACCION\nAun hay trabajadores en el area")
+                    .setPositiveButton("OK",  new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    }).show();
+        } else {
+            Log.d("consultarActividad", "No hay trabajadores en el area.");
+            actualizarRegistro();
+        }
     }
 
     private void actualizarRegistro() {
@@ -153,15 +176,14 @@ public class MenuApp extends AppCompatActivity
         SQLiteDatabase baseD = admin.getReadableDatabase();
         String varestado = "false";
         ContentValues registro = new ContentValues();
-        registro.put("estado",varestado);
-        int cantidad = baseD.update("actividad",registro, "id_actividad="+var1,null);
+        registro.put("estado", varestado);
+        int cantidad = baseD.update("actividad", registro, "id_actividad=" + var1, null);
 
-        if (cantidad == 1){
-            Toast.makeText(this, "Los Articulos se modificaron", Toast.LENGTH_LONG).show();
-
-
-        }else{
-            Toast.makeText(this, "Los Articulos no se modificaron", Toast.LENGTH_LONG).show();
+        if (cantidad == 1) {
+            Toast.makeText(this, "SE HA GUARDADO LA ACTIVIDAD", Toast.LENGTH_LONG).show();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new RegActividades()).commit();
+        } else {
+            Toast.makeText(this, "NO SE HA GUARDADO LA ACTIVIDAD", Toast.LENGTH_LONG).show();
         }
     }
 }

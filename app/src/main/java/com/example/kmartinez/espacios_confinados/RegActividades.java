@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 
 public class RegActividades extends Fragment {
@@ -30,6 +32,7 @@ public class RegActividades extends Fragment {
     String resul_seg;
     int cnt, cont;
     int tiempo_int;
+    int mul_tiem;
     boolean op = false;
 
     @Override
@@ -55,18 +58,17 @@ public class RegActividades extends Fragment {
         sp.setAdapter(adapter);
 
 
-
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         Cursor cursor = baseD.rawQuery("SELECT * FROM actividad ;", null);
         cont = cursor.getCount();
-        Log.d("RegActividades","onCreateView: count actividades "+cont);
+        Log.d("RegActividades", "onCreateView: count actividades " + cont);
         cursor.close();
         // Si ya existe datos registrados de la actividad
         if (cont > 0) {
             checar();
         } else {
-            Log.d("RegActividades","onCreateView: Ingresa Los Datos " + cnt);
+            Log.d("RegActividades", "onCreateView: Ingresa Los Datos " + cnt);
         }
 
 
@@ -76,10 +78,10 @@ public class RegActividades extends Fragment {
             public void onClick(View view) {
                 //Avisa que hay campos vacios
                 intentoLogin(nactividad.getText().toString(), narea.getText().toString(), lugare.getText().toString(), tiempo.getText().toString());
-                if (tiempo.getText().toString().equals("0")){
+                if (tiempo.getText().toString().equals("0")) {
                     Toast.makeText(getActivity(), "El Valor de el tiempo no puede ser: 0", Toast.LENGTH_SHORT).show();
                     tiempo.setText("");
-                }else{
+                } else {
                     //se inicia cuando no hay ningun campo vacio
                     if (op == false) {
                         calcularTmax();
@@ -138,7 +140,7 @@ public class RegActividades extends Fragment {
 
     }
 
-    private void calcularTmax() {
+    public void calcularTmax() {
         String seleccion = sp.getSelectedItem().toString();
         tiempo_int = (int) Integer.parseInt(tiempo.getText().toString());
         int conv;
@@ -146,34 +148,48 @@ public class RegActividades extends Fragment {
         if (seleccion.equals("Hrs")) {
             conv = (tiempo_int * 3600);
             resul_seg = String.valueOf(conv);
-            Log.d("RegActividades","Tiempo en seg" + conv + "seg");
+            Log.d("RegActividades", "Tiempo en seg" + conv + "seg");
         }
         if (seleccion.equals("Min")) {
             conv = (tiempo_int * 60);
             resul_seg = String.valueOf(conv);
-            Log.d("RegActividades","Tiempo en seg" + conv + "seg");
+            Log.d("RegActividades", "Tiempo en seg" + conv + "seg");
         }
 
         registrarActividad();
     }
-    private void checar() {
+
+    public void checar() {
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(getContext(), "eConfinados", null, 1);
         SQLiteDatabase baseD = admin.getReadableDatabase();
         // Busca todas las actividades activas
         Cursor cursor = baseD.rawQuery("SELECT * FROM actividad WHERE estado = 'true';", null);
         cursor.moveToFirst();
         cnt = cursor.getCount();
-        Log.d("RegActividades","checar(): Comprobando actividades activas " + cnt);
+        Log.d("RegActividades", "checar(): Comprobando actividades activas " + cnt);
         //Toast.makeText(getContext(), "Comprobando " + cnt, Toast.LENGTH_LONG).show();
         cursor.close();
         // Si cuenta con actividades activas, traer otra vez los datos de la actividad (?)
         if (cnt >= 1) {
             Cursor c = baseD.rawQuery("SELECT nombre, area, luEsp, tiempoMax FROM actividad WHERE estado = 'true';", null);
             if (c.moveToFirst()) {
+
                 nactividad.setText(c.getString(0));
                 narea.setText((c.getString(1)));
                 lugare.setText(c.getString(2));
-                tiempo.setText((c.getString(3)));
+
+                int tim = Integer.parseInt(c.getString(3));
+
+
+                long secons = tim;
+                long hours = TimeUnit.SECONDS.toHours(secons);
+                secons -= TimeUnit.HOURS.toSeconds(hours);
+                long minutes = TimeUnit.SECONDS.toMinutes(secons);
+                secons -= TimeUnit.MINUTES.toSeconds(minutes);
+
+                String tim1 = String.format(Locale.ENGLISH, "%02d:%02d", hours, minutes);
+
+                tiempo.setText("" + tim1);
                 c.close();
             } else {
                 c.close();
