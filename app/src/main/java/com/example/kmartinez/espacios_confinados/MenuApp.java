@@ -119,16 +119,18 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_RegTrab) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegTrabajadores()).commit();
         } else if (id == R.id.nav_List) {
-
-            //Intent intent = new Intent(getApplicationContext(), ListaTrabajadores.class);
-            //startActivity(intent);
             fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
         } else if (id == R.id.nav_Guardar) {
             consultarActividad();
         } else if (id == R.id.nav_Enviar) {
-
+            EnvioDatosServer data = new EnvioDatosServer(getBaseContext());
+            data.sendData();
+            Log.d("EnvioDatos","Envio de datos");
         } else if (id == R.id.nav_Salir) {
             // TODO: cancelar SharedPreferences
+
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -160,7 +162,7 @@ public class MenuApp extends AppCompatActivity
             Toast.makeText(this, "Los Articulos se modificaron", Toast.LENGTH_LONG).show();
 
 
-        }else{
+        } else{
             Toast.makeText(this, "Los Articulos no se modificaron", Toast.LENGTH_LONG).show();
         }
     }
