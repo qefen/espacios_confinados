@@ -1,8 +1,10 @@
 package com.example.kmartinez.espacios_confinados;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,7 +29,7 @@ import android.widget.Toast;
 
 public class MenuApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    int var1, var2;
+    int var1, var2, var3;
     int act;
     EditText a1, a2, a3, a4;
     FragmentManager fragmentManager = getSupportFragmentManager();
@@ -121,7 +123,6 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_RegTrab) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new RegTrabajadores()).commit();
         } else if (id == R.id.nav_List) {
-
             //Intent intent = new Intent(getApplicationContext(), ListaTrabajadores.class);
             //startActivity(intent);
             fragmentManager.beginTransaction().replace(R.id.contenedor, new ListaTrabajadores()).commit();
@@ -130,6 +131,8 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_Enviar) {
 
         } else if (id == R.id.nav_Salir) {
+            consultarSalir();
+
             // TODO: cancelar SharedPreferences
         }
 
@@ -137,6 +140,7 @@ public class MenuApp extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
     private void consultarActividad() {
         ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "eConfinados", null, 1);
@@ -158,7 +162,7 @@ public class MenuApp extends AppCompatActivity
             AlertDialog.Builder confirmarSacarTrabajador = new AlertDialog.Builder(this);
             confirmarSacarTrabajador
                     .setMessage("NO SE PERMITE ESTA ACCION\nAun hay trabajadores en el area")
-                    .setPositiveButton("OK",  new DialogInterface.OnClickListener() {
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
@@ -167,6 +171,37 @@ public class MenuApp extends AppCompatActivity
         } else {
             Log.d("consultarActividad", "No hay trabajadores en el area.");
             actualizarRegistro();
+        }
+    }
+
+    private void consultarSalir() {
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "eConfinados", null, 1);
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
+        cursor.moveToFirst();
+        var3 = cursor.getCount();
+        cursor.close();
+
+
+        if (var3 > 0) {
+            Log.d("consultarSalir", "Aun hay trabajadores en el area.");
+            AlertDialog.Builder confirmarSacarTrabajador = new AlertDialog.Builder(this);
+            confirmarSacarTrabajador
+                    .setMessage("NO SE PERMITE ESTA ACCION\nAun hay actividades no guardadas")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    }).show();
+        } else {
+            Log.d("consultarSalir", "No hay trabajadores en el area.");
+            SharedPreferences preferences = getSharedPreferences("credentials", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.commit();
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
         }
     }
 

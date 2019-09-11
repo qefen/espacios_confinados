@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -224,12 +225,14 @@ public class RegActividades extends Fragment {
         String lugarEsp = lugare.getText().toString();
         String tiempoAct = resul_seg.toString();
         String estadoAct = "true";
+        String fechaCre = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         ContentValues registro = new ContentValues();
         registro.put("nombre", nombAct);
         registro.put("area", nombArea);
         registro.put("luEsp", lugarEsp);
         registro.put("tiempoMax", tiempoAct);
         registro.put("estado", estadoAct);
+        registro.put("fecha_creacion",fechaCre);
 
         baseD.insert("actividad", null, registro);
         baseD.close();
@@ -247,4 +250,6 @@ public class RegActividades extends Fragment {
         // Commit a la transacción
         transaction.commit();
     }
+
+
 }
