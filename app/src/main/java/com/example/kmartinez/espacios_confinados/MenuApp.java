@@ -129,11 +129,16 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_Guardar) {
             consultarActividad();
         } else if (id == R.id.nav_Enviar) {
-
+            EnvioDatosServer data = new EnvioDatosServer(getBaseContext());
+            data.sendData();
+            Log.d("EnvioDatos","Envio de datos");
         } else if (id == R.id.nav_Salir) {
             consultarSalir();
 
             // TODO: cancelar SharedPreferences
+
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

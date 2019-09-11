@@ -356,8 +356,6 @@ public class RegTrabajadores extends Fragment {
 
             return returndata.trim();
         }
-
-
     }
 
 }

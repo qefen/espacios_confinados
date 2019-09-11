@@ -256,9 +256,9 @@ public class LoginActivity extends AppCompatActivity{
                 data = "user="+user;
                 data += "&password="+pass;
                 data += "&function=get_auth";
-                data += "&version=042019v1_SegSem";
+                data += "&version=082019v1_EspaciosConf";
 
-                URL url = new URL("https://sissmac.arcelormittal.com.mx/logistics/AppMovil/AsistenciaEventos/Asistencia.jsp?"+data);
+                URL url = new URL("https://sissmac.arcelormittal.com.mx/logistics/AppMovil/espaciosConfinados/EspaciosConfinados.jsp?"+data);
                 HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 urlConnection.setDoInput(true);
