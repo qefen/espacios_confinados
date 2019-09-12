@@ -129,9 +129,7 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_Guardar) {
             consultarActividad();
         } else if (id == R.id.nav_Enviar) {
-            EnvioDatosServer data = new EnvioDatosServer(getBaseContext());
-            data.sendData();
-            Log.d("EnvioDatos","Envio de datos");
+            envioDatosServidor();
         } else if (id == R.id.nav_Salir) {
             consultarSalir();
 
@@ -207,6 +205,31 @@ public class MenuApp extends AppCompatActivity
             editor.commit();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
+        }
+    }
+    private void envioDatosServidor() {
+
+        ConexionSQLiteHelper admin = new ConexionSQLiteHelper(this, "eConfinados", null, 1);
+        SQLiteDatabase baseD = admin.getReadableDatabase();
+        Cursor cursor = baseD.rawQuery("SELECT id_actividad FROM actividad WHERE estado = 'true';", null);
+        cursor.moveToFirst();
+        var3 = cursor.getCount();
+        cursor.close();
+        if (var3 > 0) {
+            Log.d("consultarSalir", "Aun hay trabajadores en el area.");
+            AlertDialog.Builder confirmarSacarTrabajador = new AlertDialog.Builder(this);
+            confirmarSacarTrabajador
+                    .setMessage("NO SE PERMITE ESTA ACCION\nGuarde primero todas las actividades")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    }).show();
+        } else {
+            EnvioDatosServer data = new EnvioDatosServer(getBaseContext());
+            data.sendData();
+            Log.d("EnvioDatos","Envio de datos");
         }
     }
 
