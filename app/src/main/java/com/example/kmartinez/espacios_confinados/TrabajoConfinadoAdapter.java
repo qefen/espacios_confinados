@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.VibrationEffect;
@@ -178,6 +179,7 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                 public void onFinish() {
                     Log.d("onFinish","triggered");
                     listElement.setBackgroundColor(Color.rgb(255,83,13));
+
                     tvTiempoPendiente.setText("00:00:00");
                     // NOTIFICACIÓN
                     //createNotification(trabajoconfinado.getIdTrabajador(),"Trabajo confinado","Tiempo terminado: " +trabajoconfinado.getNombreTrabajador(),"10");
@@ -188,6 +190,8 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                     } else {
                         ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(600);
                     }
+                    MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.soun_final);
+                    mediaPlayer.start();
                 }
             }.start();
         }
