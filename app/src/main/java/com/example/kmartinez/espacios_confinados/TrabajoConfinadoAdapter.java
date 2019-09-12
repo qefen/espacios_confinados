@@ -169,7 +169,7 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
 
             listElement.setBackgroundColor(Color.TRANSPARENT); // Previene que el elemento se pinte de rojo
 
-            trabajoconfinado.timer = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1000) {
+            trabajoconfinado.timer = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     tvTiempoPendiente.setText(trabajoconfinado.getTiempoRestanteHHMMSS());
