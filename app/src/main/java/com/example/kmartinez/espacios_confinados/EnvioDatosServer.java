@@ -43,9 +43,9 @@ public class EnvioDatosServer {
     }
 
     public void sendData() {
-        JSONBuild();
+        dataForm = JSONBuild();
         EnvioDatosServer.sendServerDB dataUpload = new EnvioDatosServer.sendServerDB(context);
-        dataUpload.execute(dataForm.toString());
+        dataUpload.execute(dataForm);
     }
     /***
      * GENERA EL JSON QUE SE ENVIA AL SERVIDOR:
@@ -67,14 +67,14 @@ public class EnvioDatosServer {
      * }
      *
      * */
-    public void JSONBuild() {
+    public JSONObject JSONBuild() {
         JSONObject trabajosEspaciosConfinados = new JSONObject();
         SharedPreferences credentialsPreferences = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
         String empleadoEncargado = credentialsPreferences.getString("nEmpleado","undefined");
         try {
             trabajosEspaciosConfinados.put("empleadoEncargado", empleadoEncargado);
             JSONArray actividades = new JSONArray();
-            Cursor actividadCursor = DB.rawQuery("SELECT nombre, area, luEsp, tiempoMax, id_actividad FROM actividad",null);
+            Cursor actividadCursor = DB.rawQuery("SELECT nombre, area, luEsp, tiempoMax,fecha_creacion, id_actividad FROM actividad",null);
             if(actividadCursor.moveToFirst()) {
                 do {
                     JSONObject actividad = new JSONObject();
@@ -82,10 +82,12 @@ public class EnvioDatosServer {
                     actividad.put("area", actividadCursor.getString(1));
                     actividad.put("lugarEspecifico", actividadCursor.getString(2));
                     actividad.put("duracion", actividadCursor.getString(3));
+                    actividad.put("fechaCreacion", actividadCursor.getString(4));
+
                     //actividad.put("fechaCreacion", "2019-08-08 13:40:32");
                     // ...
                     JSONArray trabajadores = new JSONArray();
-                    Cursor trabajadorCursor = DB.rawQuery("SELECT nombre, numSegS, hora, hora_salida FROM trabajador WHERE id_actividad = ?", new String[]{actividadCursor.getString(4)});
+                    Cursor trabajadorCursor = DB.rawQuery("SELECT nombre, numSegS, hora, hora_salida FROM trabajador WHERE id_actividad = ?", new String[]{actividadCursor.getString(5)});
                     if(trabajadorCursor.moveToFirst()) {
                         do {
                             JSONObject trabajador = new JSONObject();
@@ -107,11 +109,10 @@ public class EnvioDatosServer {
         }
 
         DB.close();
-        Log.d("tEC", trabajosEspaciosConfinados.toString());
-        dataForm = trabajosEspaciosConfinados;
+        return trabajosEspaciosConfinados;
     }
 
-    class sendServerDB extends AsyncTask<String, String, String> {
+    class sendServerDB extends AsyncTask<JSONObject, String, String> {
 
         private Context context;
 
@@ -130,11 +131,11 @@ public class EnvioDatosServer {
                 Toast.makeText(context, "Datos guardados correctamente", Toast.LENGTH_SHORT).show();
 
                 ConexionSQLiteHelper connection =  new ConexionSQLiteHelper(context, "eConfinados", null, 1);
-                SQLiteDatabase DB = connection.getReadableDatabase();
-                DB.rawQuery("DELETE FROM trabajador",null);
-                DB.rawQuery("DELETE FROM actividad", null);
+                SQLiteDatabase DB = connection.getWritableDatabase();
+                DB.execSQL("DELETE FROM trabajador;");
+                DB.execSQL("DELETE FROM actividad;");
                 DB.close();
-
+                Log.d("Delete","Datos borrados");
             }
             else {
                 Toast.makeText(context, "Estado: " + result, Toast.LENGTH_SHORT).show();
@@ -142,30 +143,28 @@ public class EnvioDatosServer {
         }
 
         @Override
-        protected String doInBackground(String... args) {
+        protected String doInBackground(JSONObject... SQLiteDatabaseJSON) {
             String data;
             String returndata = "";
-
-            String eConfinadosData = args[0];
-
+            JSONObject JSONData = SQLiteDatabaseJSON[0];
+            Log.d("JSONObject",JSONData.toString());
             try {
                 // Creating & connection Connection with url and required Header.
                 data = "function=set_data";
                 data += "&version=082019v1_EspaciosConf";
-                //data += "&data="+eConfinadosData;
 
                 URL url = new URL("https://sissmac.arcelormittal.com.mx/logistics/AppMovil/espaciosConfinados/EspaciosConfinados.jsp?"+data);
                 HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 urlConnection.setDoInput(true);
-                urlConnection.setRequestMethod("POST");   //POST or GET
-//                    urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestProperty("Accept","application/json");
+                urlConnection.setRequestMethod("POST");
                 urlConnection.connect();
-
+                StringBuffer ds;
                 // Write Request to output stream to server.
                 OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
-
+                out.write(JSONData.toString());
                 out.close();
                 // Check the connection status.
                 int statusCode = urlConnection.getResponseCode();
@@ -183,7 +182,6 @@ public class EnvioDatosServer {
                     }
                     returndata = dta.toString();
                     Log.d("Check", returndata);
-
                 }
             } catch (ProtocolException e) {
                 e.printStackTrace();

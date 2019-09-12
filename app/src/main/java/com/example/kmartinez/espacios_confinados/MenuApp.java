@@ -41,11 +41,20 @@ public class MenuApp extends AppCompatActivity
         setContentView(R.layout.activity_menu_app);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        FloatingActionButton fab = findViewById(R.id.fab);
         a1 = (EditText) findViewById(R.id.edtNactividad);
         a2 = (EditText) findViewById(R.id.edtNarea);
         a3 = (EditText) findViewById(R.id.edtLugare);
         a4 = (EditText) findViewById(R.id.edtTiempo);
 
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -122,9 +131,14 @@ public class MenuApp extends AppCompatActivity
         } else if (id == R.id.nav_Enviar) {
             EnvioDatosServer data = new EnvioDatosServer(getBaseContext());
             data.sendData();
-            Log.d("EnvioDatos", "Envio de datos");
+            Log.d("EnvioDatos","Envio de datos");
         } else if (id == R.id.nav_Salir) {
             consultarSalir();
+
+            // TODO: cancelar SharedPreferences
+
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
