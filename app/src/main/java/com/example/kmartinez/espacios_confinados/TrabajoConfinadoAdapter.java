@@ -190,7 +190,7 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                     } else {
                         ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(600);
                     }
-                    MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.soun_final);
+                    MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.sonido);
                     mediaPlayer.start();
                 }
             }.start();
