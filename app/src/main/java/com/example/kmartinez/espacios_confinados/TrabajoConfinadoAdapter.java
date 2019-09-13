@@ -45,6 +45,8 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         TextView horaEntrada;
         TextView tiempoPendiente;
 
+        CountDownTimer timer;
+
         public ViewHolder(Context context, View itemView) {
             super(itemView);
             this.context = context;
@@ -103,7 +105,7 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
                 Log.d("Update trabajador","Actualización satisfactoria a "+tc.getNombreTrabajador());
                 mTrabajosConfinados.remove(listPosition);
                 notifyItemRemoved(listPosition);
-                if (tc.timer != null) tc.timer.cancel();
+                if (this.timer != null) this.timer.cancel();
             }
             else {
                 Log.d("Update trabajador","No hubo actualización");
@@ -153,34 +155,34 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         final TextView tvHoraEntrada = viewHolder.horaEntrada;
         final TextView tvNss = viewHolder.numeroSeguroSocial;
         final TextView tvTiempoPendiente = viewHolder.tiempoPendiente;
+        CountDownTimer timerTiempoPendiente = viewHolder.timer;
 
         tvNombreEmpleado.setText(trabajoconfinado.getNombreTrabajador());
         tvHoraEntrada.setText(trabajoconfinado.getHoraEntradaHHMM());
         tvNss.setText(trabajoconfinado.getNumeroSeguroSocial());
         tvTiempoPendiente.setText(trabajoconfinado.getTiempoRestanteHHMMSS());
+        tvTiempoPendiente.setVisibility(View.VISIBLE);
+
 
         //CountDowmTimer
-        if(trabajoconfinado.timer != null) {
-            trabajoconfinado.timer.cancel();
+        if(timerTiempoPendiente != null) {
+            timerTiempoPendiente.cancel();
         }
         // Si todavia no se vence el tiempo
         if (trabajoconfinado.tieneTiempoPendiente()) {
             Log.d("pendiente","tiene tiempo pendiente");
 
             listElement.setBackgroundColor(Color.TRANSPARENT); // Previene que el elemento se pinte de rojo
-
-            trabajoconfinado.timer = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1) {
+            timerTiempoPendiente = new CountDownTimer(trabajoconfinado.getTiempoRestanteMillis(),1) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     tvTiempoPendiente.setText(trabajoconfinado.getTiempoRestanteHHMMSS());
                 }
-
                 @Override
                 public void onFinish() {
                     Log.d("onFinish","triggered");
+                    tvTiempoPendiente.setVisibility(View.INVISIBLE);
                     listElement.setBackgroundColor(Color.rgb(255,83,13));
-
-                    tvTiempoPendiente.setText("00:00:00");
                     // NOTIFICACIÓN
                     //createNotification(trabajoconfinado.getIdTrabajador(),"Trabajo confinado","Tiempo terminado: " +trabajoconfinado.getNombreTrabajador(),"10");
                     // VIBRACIÓN
@@ -197,10 +199,7 @@ public class TrabajoConfinadoAdapter extends RecyclerView.Adapter<TrabajoConfina
         }
         else {
             listElement.setBackgroundColor(Color.rgb(255,83,13));
-            tvTiempoPendiente.setText("00:00:00");
-            if(trabajoconfinado.timer != null) {
-                trabajoconfinado.timer.cancel();
-            }
+            tvTiempoPendiente.setVisibility(View.INVISIBLE);
         }
     }
     @Override

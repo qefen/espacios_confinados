@@ -103,6 +103,8 @@ public class TrabajoConfinado {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
         millis -= TimeUnit.MINUTES.toMillis(minutes);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+        if (this.getTiempoRestanteMillis() < 0) return "00:00:00";
         return String.format(Locale.ENGLISH, "%02d:%02d:%02d", hours, minutes, seconds);
     }
     public long getTiempoRestanteMillis() {
